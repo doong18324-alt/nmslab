@@ -243,6 +243,18 @@ html:not([lang="en"]) h1{line-height:1.28}
 html:not([lang="en"]) .tag,html:not([lang="en"]) .instr,html:not([lang="en"]) .eyebrow,
 html:not([lang="en"]) .links a,html:not([lang="en"]) .rolebar .n,html:not([lang="en"]) .role{
   text-transform:none;letter-spacing:.04em}
+
+/* ---------- translational themes ---------- */
+.themes{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--grid);
+  border:1px solid var(--grid)}
+@media(max-width:860px){.themes{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.themes{grid-template-columns:1fr}}
+.theme{background:var(--ink);padding:28px 26px;transition:background .2s}
+.theme:hover{background:var(--carbon)}
+.theme .kw{display:inline-block;font-family:'IBM Plex Mono';font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--hbo);border:1px solid var(--hbo-dim);border-radius:2px;
+  padding:4px 8px;margin-bottom:16px}
+.theme p{color:var(--soft);font-size:15.5px;line-height:1.65;margin:0}
 </style>
 </head>
 <body data-i18n-title="doc.research">
@@ -307,6 +319,43 @@ html:not([lang="en"]) .links a,html:not([lang="en"]) .rolebar .n,html:not([lang=
         <p data-i18n="a4.p.long">Models built on cohort, wearable and neuroimaging data — validated in living labs,
            not only in held-out test sets. Urban and rural sites are built into the design,
            because a model that only works downtown is not a model.</p>
+      </article>
+    </div>
+  </section>
+
+
+  <section class="rv">
+    <p class="eyebrow" data-i18n="th.eyebrow">Themes</p>
+    <h2 data-i18n="th.h">Six things we are actually building.</h2>
+    <p class="sec-note" data-i18n="th.note">
+      The four questions above are how we think. These are the six deliverables the work is
+      pointed at — the things that have to exist at the end for any of it to have mattered.
+    </p>
+
+    <div class="themes">
+      <article class="theme">
+        <span class="kw" data-i18n="th.k1">Precision rehab</span>
+        <p data-i18n="th.t1">A precision rehabilitation route for chronic pain that starts from central sensitisation rather than the painful tissue.</p>
+      </article>
+      <article class="theme">
+        <span class="kw" data-i18n="th.k2">Evidence base</span>
+        <p data-i18n="th.t2">Orthopaedic physical therapy trials aimed at a clinical standard for musculoskeletal pain management.</p>
+      </article>
+      <article class="theme">
+        <span class="kw" data-i18n="th.k3">Biomarkers</span>
+        <p data-i18n="th.t3">Functional recovery read through exercise physiology and biological markers, not questionnaires alone.</p>
+      </article>
+      <article class="theme">
+        <span class="kw" data-i18n="th.k4">Digital rehab</span>
+        <p data-i18n="th.t4">AI and wearable sensing for combined cognitive–motor rehabilitation in older adults.</p>
+      </article>
+      <article class="theme">
+        <span class="kw" data-i18n="th.k5">Neuromodulation</span>
+        <p data-i18n="th.t5">Neuromodulation as a treatment route for pain that has stopped responding to peripheral care.</p>
+      </article>
+      <article class="theme">
+        <span class="kw" data-i18n="th.k6">Protocols</span>
+        <p data-i18n="th.t6">High-efficiency rehabilitation protocols after surgery and in degenerative disease.</p>
       </article>
     </div>
   </section>

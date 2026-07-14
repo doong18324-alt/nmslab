@@ -222,9 +222,9 @@ footer a:hover{color:var(--hbo);border-color:var(--hbo)}
 }
 
 /* ---------- stat pair (publications + review/editorial) ---------- */
-.statpair{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--grid);
+.statpair{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--grid);
   border:1px solid var(--grid);margin-bottom:56px}
-@media(max-width:720px){.statpair{grid-template-columns:1fr}}
+@media(max-width:900px){.statpair{grid-template-columns:1fr}}
 .sp{background:var(--ink);padding:32px 32px}
 .sp b{display:block;font-family:'Archivo';font-weight:900;font-size:46px;letter-spacing:-.04em;
   color:var(--hbo);line-height:1;margin-bottom:14px}
@@ -261,6 +261,9 @@ html:not([lang="en"]) h1{line-height:1.28}
 html:not([lang="en"]) .tag,html:not([lang="en"]) .instr,html:not([lang="en"]) .eyebrow,
 html:not([lang="en"]) .links a,html:not([lang="en"]) .rolebar .n,html:not([lang="en"]) .role{
   text-transform:none;letter-spacing:.04em}
+.asof{font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ash);margin:-40px 0 56px;padding-top:2px}
+.asof b{color:var(--soft);font-weight:400}
 </style>
 </head>
 <body data-i18n-title="doc.index">
@@ -376,11 +379,22 @@ html:not([lang="en"]) .links a,html:not([lang="en"]) .rolebar .n,html:not([lang=
         <span class="k" data-i18n="stat.papers"><em>Peer-reviewed papers</em><br>SCI(E) / ESCI / KCI indexed</span>
       </div>
       <div class="sp">
+        <b>495</b>
+        <span class="k"><em data-i18n="stat.cites">Citations</em><br>
+        <span data-i18n="stat.hindex">h-index 12 · i10-index 16</span></span>
+      </div>
+      <div class="sp">
         <span class="hd" data-i18n="stat.rev.hd">Review &amp; editorial</span>
         <span class="k" data-i18n="stat.rev.k"><em>41 manuscripts reviewed</em> across 19 journals<br>
         <em>Section Board Member</em> &middot; Medicina (MDPI)</span>
       </div>
     </div>
+
+
+    <p class="asof">
+      <span data-i18n="asof.label">Bibliometrics retrieved</span>
+      <b>2026.07</b> &middot; Google Scholar &middot; ORCID
+    </p>
 
     <div class="cta" style="margin-top:0">
       <a class="btn btn-b" href="publications.html" data-i18n="btn.allpubs">See all publications</a>

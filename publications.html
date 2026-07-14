@@ -204,9 +204,9 @@ footer a:hover{color:var(--hbo);border-color:var(--hbo)}
 }
 
 /* ---------- stat pair (publications + review/editorial) ---------- */
-.statpair{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--grid);
+.statpair{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--grid);
   border:1px solid var(--grid);margin-bottom:56px}
-@media(max-width:720px){.statpair{grid-template-columns:1fr}}
+@media(max-width:900px){.statpair{grid-template-columns:1fr}}
 .sp{background:var(--ink);padding:32px 32px}
 .sp b{display:block;font-family:'Archivo';font-weight:900;font-size:46px;letter-spacing:-.04em;
   color:var(--hbo);line-height:1;margin-bottom:14px}
@@ -243,6 +243,37 @@ html:not([lang="en"]) h1{line-height:1.28}
 html:not([lang="en"]) .tag,html:not([lang="en"]) .instr,html:not([lang="en"]) .eyebrow,
 html:not([lang="en"]) .links a,html:not([lang="en"]) .rolebar .n,html:not([lang="en"]) .role{
   text-transform:none;letter-spacing:.04em}
+
+/* ---------- publication-year chart ---------- */
+.charts{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--grid);
+  border:1px solid var(--grid);margin-bottom:56px}
+@media(max-width:860px){.charts{grid-template-columns:1fr}}
+.pchart{background:var(--carbon);padding:26px 28px 20px}
+.pchart .hd{display:flex;justify-content:space-between;align-items:baseline;gap:16px;
+  font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ash);margin-bottom:22px}
+.pchart .hd b{color:var(--hbo);font-weight:500}
+.bars{display:grid;gap:8px;align-items:end;
+  height:170px;border-bottom:1px solid var(--grid);padding-bottom:0}
+.bar{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%}
+.bar i{display:block;width:100%;background:var(--hbo);border-radius:1px 1px 0 0;
+  transition:height .8s cubic-bezier(.2,.7,.3,1)}
+.bar.partial i{background:repeating-linear-gradient(135deg,var(--hbo-dim) 0 4px,transparent 4px 8px);
+  border:1px solid var(--hbo-dim);border-bottom:0}
+.bar em{font-style:normal;font-family:'IBM Plex Mono';font-size:12px;color:var(--bone);
+  margin-bottom:7px;line-height:1}
+.yrs{display:grid;gap:8px;margin-top:9px}
+.yrs span{font-family:'IBM Plex Mono';font-size:11px;color:var(--ash);text-align:center}
+.yrs span:last-child{color:var(--hbo-dim)}
+.g7{grid-template-columns:repeat(7,1fr)}
+.g6{grid-template-columns:repeat(6,1fr)}
+.bar.cite i{background:var(--hbr)}
+.bar.cite.partial i{background:repeating-linear-gradient(135deg,#2F5578 0 4px,transparent 4px 8px);border-color:#2F5578}
+.pchart .fn{margin-top:16px;font-size:12.5px;color:var(--ash);line-height:1.7}
+@media(max-width:640px){.bars{height:130px;gap:5px}.bar em{font-size:10px}.yrs{gap:5px}.yrs span{font-size:9px}}
+.asof{font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ash);margin:-40px 0 56px;padding-top:2px}
+.asof b{color:var(--soft);font-weight:400}
 </style>
 </head>
 <body data-i18n-title="doc.pubs">
@@ -274,6 +305,61 @@ html:not([lang="en"]) .links a,html:not([lang="en"]) .rolebar .n,html:not([lang=
   </div>
 
   <section class="first rv">
+    <div class="charts">
+    <div class="pchart">
+      <div class="hd">
+        <span data-i18n="pc.hd">Peer-reviewed papers per year</span>
+        <b>56 <span data-i18n="pc.total">total</span></b>
+      </div>
+      <div class="bars g7">
+        <div class="bar"><em>4</em><i style="height:25%"></i></div>
+        <div class="bar"><em>8</em><i style="height:50%"></i></div>
+        <div class="bar"><em>16</em><i style="height:100%"></i></div>
+        <div class="bar"><em>14</em><i style="height:88%"></i></div>
+        <div class="bar"><em>6</em><i style="height:38%"></i></div>
+        <div class="bar"><em>7</em><i style="height:44%"></i></div>
+        <div class="bar partial"><em>1</em><i style="height:6%"></i></div>
+      </div>
+      <div class="yrs g7">
+        <span>2020</span>
+        <span>2021</span>
+        <span>2022</span>
+        <span>2023</span>
+        <span>2024</span>
+        <span>2025</span>
+        <span>2026</span>
+      </div>
+      <p class="fn" data-i18n="pc.fn">Counted from the DOI-linked entries listed below. 2026 is in progress.
+        Other bibliometric services may report a different total because they count
+        conference items and non-DOI records as well.</p>
+    </div>
+
+    <div class="pchart">
+      <div class="hd">
+        <span data-i18n="cc.hd">Citations received per year</span>
+        <b>495 <span data-i18n="cc.total">total</span></b>
+      </div>
+      <div class="bars g6">
+        <div class="bar cite"><em>10</em><i style="height:6%"></i></div>
+        <div class="bar cite"><em>27</em><i style="height:17%"></i></div>
+        <div class="bar cite"><em>76</em><i style="height:48%"></i></div>
+        <div class="bar cite"><em>140</em><i style="height:88%"></i></div>
+        <div class="bar cite"><em>160</em><i style="height:100%"></i></div>
+        <div class="bar cite partial"><em>83</em><i style="height:52%"></i></div>
+      </div>
+      <div class="yrs g6">
+        <span>2021</span>
+        <span>2022</span>
+        <span>2023</span>
+        <span>2024</span>
+        <span>2025</span>
+        <span>2026</span>
+      </div>
+      <p class="fn" data-i18n="cc.fn">Per-year values are read from the Google Scholar profile chart.
+        The total, h-index and i10-index are exact. 2026 is in progress.</p>
+    </div>
+    </div>
+
     <div class="statpair">
       <div class="sp">
         <b>56</b>
@@ -284,7 +370,18 @@ html:not([lang="en"]) .links a,html:not([lang="en"]) .rolebar .n,html:not([lang=
         <span class="k" data-i18n="stat.rev.k"><em>41 manuscripts reviewed</em> across 19 journals<br>
         <em>Section Board Member</em> &middot; Medicina (MDPI)</span>
       </div>
+      <div class="sp">
+        <b>495</b>
+        <span class="k"><em data-i18n="stat.cites">Citations</em><br>
+        <span data-i18n="stat.hindex">h-index 12 · i10-index 16</span></span>
+      </div>
     </div>
+
+
+    <p class="asof">
+      <span data-i18n="asof.label">Bibliometrics retrieved</span>
+      <b>2026.07</b> &middot; Google Scholar &middot; ORCID
+    </p>
 
     <p class="yr">2026</p>
     <a class="pub" href="https://doi.org/10.14474/ptrs.2026.15.1.57" target="_blank" rel="noopener">

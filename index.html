@@ -73,17 +73,35 @@ header.home{padding:150px 0 0;position:relative}
 .tag{font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.09em;text-transform:uppercase;
   color:var(--ash);border:1px solid var(--grid);border-radius:2px;padding:6px 10px}
 
-/* signature: fNIRS panel */
+/* signature: fNIRS panel — prefrontal topography + canonical HRF */
 .probe{position:relative;border:1px solid var(--grid);
-  background:linear-gradient(180deg,#0F0F11 0%,#0A0A0B 100%);border-radius:3px;padding:16px 16px 12px}
-.probe-hd{display:flex;justify-content:space-between;align-items:baseline;
+  background:linear-gradient(180deg,#0F0F11 0%,#0A0A0B 100%);border-radius:3px;
+  padding:16px 16px 12px;overflow:hidden}
+.probe::before{content:"";position:absolute;inset:0 0 auto 0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,122,24,.35),transparent)}
+.probe-hd{display:flex;justify-content:space-between;align-items:baseline;gap:14px;
   font-family:'IBM Plex Mono';font-size:10px;letter-spacing:.14em;text-transform:uppercase;
   color:var(--ash);margin-bottom:12px}
-.probe-hd b{color:var(--hbo);font-weight:500}
-canvas{display:block;width:100%;height:auto}
-.legend{display:flex;gap:18px;margin-top:11px;font-family:'IBM Plex Mono';font-size:10px;
-  letter-spacing:.1em;color:var(--ash);text-transform:uppercase}
+.probe-hd b{color:var(--hbo);font-weight:500;transition:color .5s ease;white-space:nowrap}
+.probe-hd b[data-state="rest"]{color:var(--ash)}
+.probe-hd b[data-state="recovery"]{color:var(--hbr)}
+.probe-body{display:grid;grid-template-columns:minmax(120px,32%) 1fr;gap:16px}
+.pane{position:relative;width:100%}
+.pane canvas{display:block;width:100%;height:100%}
+.pane.topo{aspect-ratio:5/6}
+.pane.trace{aspect-ratio:16/9;min-height:170px}
+.legend{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:11px;
+  padding-top:10px;border-top:1px solid var(--grid);
+  font-family:'IBM Plex Mono';font-size:10px;letter-spacing:.1em;color:var(--ash);
+  text-transform:uppercase}
 .legend i{display:inline-block;width:14px;height:2px;margin-right:6px;vertical-align:middle}
+.legend .ramp{display:inline-block;width:66px;height:6px;margin:0 6px;vertical-align:middle;
+  border:1px solid var(--grid);border-radius:1px;
+  background:linear-gradient(90deg,var(--hbr),#0F0F11 48%,#0F0F11 52%,var(--hbo))}
+@media(max-width:900px){
+  .probe-body{grid-template-columns:1fr}
+  .pane.topo{aspect-ratio:5/4;max-width:270px;margin:0 auto}
+}
 
 /* ---------- sections ---------- */
 section{padding:96px 0 0;border-top:1px solid var(--grid);margin-top:96px}
@@ -252,18 +270,22 @@ footer a:hover{color:var(--hbo);border-color:var(--hbo)}
       </div>
     </div>
 
-    <div class="probe" aria-hidden="true">
-      <div class="probe-hd">
-        <span>fNIRS · prefrontal montage</span>
-        <b id="stateLabel">DUAL-TASK</b>
+    <figure class="probe" aria-hidden="true">
+      <figcaption class="probe-hd">
+        <span>fNIRS &middot; prefrontal montage &middot; 10 optodes / 8 ch</span>
+        <b id="stateLabel" data-state="rest">REST</b>
+      </figcaption>
+      <div class="probe-body">
+        <div class="pane topo"><canvas id="topo"></canvas></div>
+        <div class="pane trace"><canvas id="hrf"></canvas></div>
       </div>
-      <canvas id="hrf" width="620" height="340"></canvas>
       <div class="legend">
-        <span><i style="background:#FF7A18"></i>HbO₂</span>
+        <span><i style="background:#FF7A18"></i>HbO&#8322;</span>
         <span><i style="background:#4C7FB8"></i>HbR</span>
-        <span style="margin-left:auto" class="mono">CH 01–08</span>
+        <span>&minus;0.6<span class="ramp"></span>+0.6 &mu;M</span>
+        <span style="margin-left:auto">CH 01&ndash;08 &middot; 10 Hz</span>
       </div>
-    </div>
+    </figure>
   </div>
 </header>
 
@@ -357,120 +379,342 @@ footer a:hover{color:var(--hbo);border-color:var(--hbo)}
 
 <script>
 /* NMS Lab — signature: live fNIRS haemodynamic response.
-   HbO2 rises ~6 s after stimulus onset and returns with a small undershoot;
-   HbR mirrors it at roughly a third of the amplitude. That is the shape drawn here. */
+   Canonical double-gamma HRF (SPM: gamma(6,1) peak minus gamma(16,1)/6 undershoot)
+   convolved with a block-design stimulus. The whole 120 s cycle is precomputed once
+   at load, so nothing integrates frame-to-frame and the traces cannot drift or diverge.
+   HbO2 rises with the task; HbR mirrors it at -0.42x with a 1 s lag. Lateral (DLPFC)
+   channels carry the larger dual-task response. Left panel interpolates the 8 channels
+   into a prefrontal topography; areas without optode coverage stay dark. */
 (function () {
-  const c = document.getElementById('hrf');
-  if (!c) return;
-  const ctx = c.getContext('2d');
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const DPR = Math.min(window.devicePixelRatio || 1, 2);
+  "use strict";
+  var topoCv = document.getElementById('topo');
+  var traceCv = document.getElementById('hrf');
+  var condEl = document.getElementById('stateLabel');
+  if (!topoCv || !traceCv) return;
 
-  function size() {
-    const w = c.clientWidth, h = Math.round(w * 0.55);
-    c.width = w * DPR; c.height = h * DPR;
-    c.style.height = h + 'px';
-    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-    return { w, h };
+  /* ---------- 1. signal model (precomputed) ---------- */
+  var FS = 10, CYCLE = 120, N = FS * CYCLE, NCH = 8;
+
+  var BLOCKS = [
+    { t0:  0, t1: 18, label:'REST',        state:'rest',     gain:0    },
+    { t0: 18, t1: 48, label:'SINGLE-TASK', state:'task',     gain:0.42 },
+    { t0: 48, t1: 60, label:'REST',        state:'rest',     gain:0    },
+    { t0: 60, t1: 90, label:'DUAL-TASK',   state:'task',     gain:1.00 },
+    { t0: 90, t1:120, label:'RECOVERY',    state:'recovery', gain:0    }
+  ];
+  function blockAt(t){
+    for (var i = 0; i < BLOCKS.length; i++)
+      if (t >= BLOCKS[i].t0 && t < BLOCKS[i].t1) return BLOCKS[i];
+    return BLOCKS[0];
   }
-  let { w, h } = size();
-  window.addEventListener('resize', () => { ({ w, h } = size()); });
+  var DUAL = BLOCKS[3];
 
-  const CH = 8;
-  const states = ['REST', 'SINGLE-TASK', 'DUAL-TASK', 'RECOVERY'];
-  let t = 0, si = 2;
-  const label = document.getElementById('stateLabel');
-
-  const g = (x, k, th) => Math.pow(x, k - 1) * Math.exp(-x / th);
-  const hrf = x => x < 0 ? 0 : (g(x, 6, 0.9) / 22) - (g(x, 16, 0.9) / 480);
-
-  function draw() {
-    ctx.clearRect(0, 0, w, h);
-    const padL = 34, padR = 8, padT = 8, padB = 20;
-    const gw = w - padL - padR, gh = h - padT - padB;
-
-    ctx.strokeStyle = '#1D1B18'; ctx.lineWidth = 1;
-    for (let i = 0; i <= 4; i++) {
-      const y = padT + gh * i / 4;
-      ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(padL + gw, y); ctx.stroke();
-    }
-    ctx.strokeStyle = '#2E2B27';
-    const base = padT + gh * 0.62;
-    ctx.beginPath(); ctx.moveTo(padL, base); ctx.lineTo(padL + gw, base); ctx.stroke();
-
-    ctx.fillStyle = '#5B564F';
-    ctx.font = '9px "IBM Plex Mono", monospace';
-    ctx.fillText('ΔHb', 4, padT + 10);
-    ctx.fillText('t (s)', padL + gw - 24, h - 5);
-
-    const win = 24, onset = 4;
-    const px = s => padL + (s / win) * gw;
-
-    ctx.fillStyle = 'rgba(255,122,24,.06)';
-    ctx.fillRect(px(onset), padT, px(onset + 10) - px(onset), gh);
-    ctx.strokeStyle = 'rgba(255,122,24,.28)';
-    ctx.setLineDash([2, 3]);
-    ctx.beginPath(); ctx.moveTo(px(onset), padT); ctx.lineTo(px(onset), padT + gh); ctx.stroke();
-    ctx.setLineDash([]);
-
-    const prog = Math.min(t / (win * 30), 1);
-
-    for (let ch = 0; ch < CH; ch++) {
-      const amp = 0.72 + (ch % 4) * 0.10;
-      const lag = (ch % 3) * 0.35;
-      const alpha = 0.18 + (ch === 3 ? 0.82 : 0.10);
-
-      ctx.beginPath();
-      ctx.lineWidth = ch === 3 ? 2 : 1;
-      ctx.strokeStyle = ch === 3 ? '#FF7A18' : `rgba(255,122,24,${alpha})`;
-      for (let s = 0; s <= win * prog; s += 0.15) {
-        const v = hrf(s - onset - lag) * amp * gh * 0.9;
-        const n = (Math.sin(s * 7.3 + ch) * 0.6 + Math.sin(s * 3.1 + ch * 2) * 0.4) * 1.6;
-        const y = base - v - n;
-        s === 0 ? ctx.moveTo(px(s), y) : ctx.lineTo(px(s), y);
-      }
-      ctx.stroke();
-
-      ctx.beginPath();
-      ctx.lineWidth = ch === 3 ? 1.6 : 1;
-      ctx.strokeStyle = ch === 3 ? 'rgba(76,127,184,.95)' : `rgba(76,127,184,${alpha * 0.55})`;
-      for (let s = 0; s <= win * prog; s += 0.15) {
-        const v = -hrf(s - onset - lag) * amp * gh * 0.30;
-        const n = Math.sin(s * 5.9 + ch * 1.7) * 1.2;
-        const y = base - v - n;
-        s === 0 ? ctx.moveTo(px(s), y) : ctx.lineTo(px(s), y);
-      }
-      ctx.stroke();
-    }
-
-    if (prog < 1) {
-      const x = px(win * prog);
-      ctx.strokeStyle = 'rgba(239,233,225,.35)'; ctx.lineWidth = 1;
-      ctx.beginPath(); ctx.moveTo(x, padT); ctx.lineTo(x, padT + gh); ctx.stroke();
+  /* channel positions, normalised (head centre 0,0; nose at -y). x<0 = left hemisphere */
+  var CH = [
+    { x:-0.34, y:-0.62, lat:1.0 },  /* 01 left lateral  (DLPFC) */
+    { x:-0.12, y:-0.72, lat:0.3 },  /* 02 left medial           */
+    { x: 0.12, y:-0.72, lat:0.3 },  /* 03 right medial          */
+    { x: 0.34, y:-0.62, lat:1.0 },  /* 04 right lateral (DLPFC) */
+    { x:-0.44, y:-0.40, lat:1.0 },  /* 05 */
+    { x:-0.16, y:-0.48, lat:0.4 },  /* 06 */
+    { x: 0.16, y:-0.48, lat:0.4 },  /* 07 */
+    { x: 0.44, y:-0.40, lat:1.0 }   /* 08 */
+  ];
+  var OPT = [], row, i, f, yr, spread;
+  for (row = 0; row < 2; row++) {
+    yr = row ? -0.44 : -0.67; spread = row ? 0.50 : 0.40;
+    for (i = 0; i < 5; i++) {
+      f = (i / 4 - 0.5) * 2;
+      OPT.push({ x: f * spread, y: yr + Math.abs(f) * 0.10, src: (i + row) % 2 === 0 });
     }
   }
 
-  if (reduce) { t = 24 * 30; draw(); return; }
+  function lgamma(x){
+    var g = [76.18009172947146,-86.50532032941677,24.01409824083091,
+             -1.231739572450155,0.1208650973866179e-2,-0.5395239384953e-5];
+    var y = x, tmp = x + 5.5, ser = 1.000000000190015, j;
+    tmp -= (x + 0.5) * Math.log(tmp);
+    for (j = 0; j < 6; j++) ser += g[j] / ++y;
+    return -tmp + Math.log(2.5066282746310005 * ser / x);
+  }
+  function gammaPdf(t, k){
+    return t <= 0 ? 0 : Math.exp((k - 1) * Math.log(t) - t - lgamma(k));
+  }
+  function pseudo(n){ var s = Math.sin(n * 12.9898) * 43758.5453; return s - Math.floor(s); }
 
-  (function loop() {
-    t++;
-    if (t > 24 * 30 + 70) {
-      t = 0; si = (si + 1) % states.length;
-      if (label) label.textContent = states[si];
+  var KLEN = 32 * FS, HRF = new Float64Array(KLEN), hmax = 0, t;
+  for (i = 0; i < KLEN; i++) {
+    t = i / FS;
+    HRF[i] = gammaPdf(t, 6) - gammaPdf(t, 16) / 6;
+    if (HRF[i] > hmax) hmax = HRF[i];
+  }
+  for (i = 0; i < KLEN; i++) HRF[i] /= hmax;
+
+  var PEAK = 0.58, HBR_RATIO = -0.42, HBR_LAG = FS;
+  var hbo = [], hbr = [], c, k, kmax, sum, b, boost, u, j, TAU = 2 * Math.PI;
+
+  for (c = 0; c < NCH; c++) {
+    hbo.push(new Float64Array(N));
+    hbr.push(new Float64Array(N));
+    u = new Float64Array(N);
+    for (i = 0; i < N; i++) {
+      b = blockAt(i / FS);
+      if (!b.gain) continue;
+      boost = (b === DUAL) ? (0.55 + 0.55 * CH[c].lat) : 0.85;
+      u[i] = b.gain * boost * (0.90 + 0.20 * pseudo(c * 7 + 3));
     }
-    draw();
-    requestAnimationFrame(loop);
-  })();
-})();
+    for (i = 0; i < N; i++) {
+      sum = 0; kmax = Math.min(KLEN, i + 1);
+      for (k = 0; k < kmax; k++) sum += u[i - k] * HRF[k];
+      hbo[c][i] = sum / FS * PEAK;
+    }
+    for (i = 0; i < N; i++) {
+      j = i - HBR_LAG;
+      hbr[c][i] = HBR_RATIO * (j >= 0 ? hbo[c][j] : 0);
+    }
+    /* physiological noise: Mayer 0.1 Hz, respiration 0.25 Hz, cardiac 1.15 Hz, drift */
+    var p1 = pseudo(c + 1) * TAU, p2 = pseudo(c + 11) * TAU,
+        p3 = pseudo(c + 21) * TAU, p4 = pseudo(c + 31) * TAU, nz;
+    for (i = 0; i < N; i++) {
+      t = i / FS;
+      nz = 0.045 * Math.sin(TAU * 0.10 * t + p1)
+         + 0.028 * Math.sin(TAU * 0.25 * t + p2)
+         + 0.014 * Math.sin(TAU * 1.15 * t + p3)
+         + 0.030 * Math.sin(TAU * (1 / CYCLE) * t + p4)
+         + 0.007 * (pseudo(c * 997 + i) - 0.5);
+      hbo[c][i] += nz;
+      hbr[c][i] += nz * 0.45;
+    }
+  }
 
-/* scroll reveal */
-(function () {
-  const io = new IntersectionObserver(es => {
-    es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
-  }, { threshold: .12 });
-  document.querySelectorAll('.rv').forEach(el => io.observe(el));
-})();
+  function at(arr, tt){
+    var x = (((tt % CYCLE) + CYCLE) % CYCLE) * FS;
+    var i0 = Math.floor(x), fr = x - i0;
+    return arr[i0 % N] * (1 - fr) + arr[(i0 + 1) % N] * fr;
+  }
 
+  /* ---------- 2. rendering ---------- */
+  var cs = getComputedStyle(document.documentElement);
+  var HBO = cs.getPropertyValue('--hbo').trim() || '#FF7A18';
+  var HBR = cs.getPropertyValue('--hbr').trim() || '#4C7FB8';
+  var GRIDC = cs.getPropertyValue('--grid').trim() || '#26241F';
+  var ASH = cs.getPropertyValue('--ash').trim() || '#8A857E';
+
+  var tctx = topoCv.getContext('2d'), rctx = traceCv.getContext('2d');
+  var GW = 44, GH = 52;
+  var buf = document.createElement('canvas');
+  buf.width = GW; buf.height = GH;
+  var bctx = buf.getContext('2d');
+  var img = bctx.createImageData(GW, GH);
+  var DPR = 1;
+
+  function fit(cv){
+    var r = cv.getBoundingClientRect();
+    DPR = Math.min(window.devicePixelRatio || 1, 2);
+    cv.width = Math.max(1, Math.round(r.width * DPR));
+    cv.height = Math.max(1, Math.round(r.height * DPR));
+  }
+  function resize(){ fit(topoCv); fit(traceCv); }
+  window.addEventListener('resize', resize);
+  resize();
+
+  var SCALE = 0.6;
+  function drawTopo(tt){
+    var w = topoCv.width, h = topoCv.height;
+    tctx.clearRect(0, 0, w, h);
+    var cx = w / 2, cy = h * 0.52;
+    var rx = Math.min(w * 0.40, h * 0.36), ry = rx * 1.16;
+
+    var v = [], q;
+    for (q = 0; q < NCH; q++) v.push(at(hbo[q], tt));
+
+    var d = img.data, gx, gy, nx, ny, o, num, den, dmin, dx, dy, r2, wg, val, cov, a, s, R, G, B, mag;
+    for (gy = 0; gy < GH; gy++) {
+      for (gx = 0; gx < GW; gx++) {
+        nx = (gx / (GW - 1) - 0.5) * 2.2;
+        ny = (gy / (GH - 1) - 0.5) * 2.2;
+        o = (gy * GW + gx) * 4;
+        if (nx * nx + (ny * ny) / 1.35 > 1) { d[o + 3] = 0; continue; }
+        num = 0; den = 0; dmin = 9;
+        for (q = 0; q < NCH; q++) {
+          dx = nx - CH[q].x; dy = ny - CH[q].y;
+          r2 = dx * dx + dy * dy + 1e-4;
+          if (r2 < dmin) dmin = r2;
+          wg = 1 / (r2 * r2);
+          num += wg * v[q]; den += wg;
+        }
+        val = num / den;
+        cov = Math.max(0, 1 - Math.sqrt(dmin) / 0.42);
+        a = Math.pow(cov, 1.1);
+        s = Math.max(-1, Math.min(1, val / SCALE));
+        if (s >= 0) { R = 255; G = 122 + 40 * (1 - s); B = 24 + 60 * (1 - s); }
+        else { var kk = -s; R = 76 + 30 * (1 - kk); G = 127 + 40 * (1 - kk); B = 184; }
+        mag = Math.min(1, Math.abs(s) * 1.15 + 0.06);
+        d[o] = R * mag; d[o + 1] = G * mag; d[o + 2] = B * mag; d[o + 3] = 255 * a;
+      }
+    }
+    bctx.putImageData(img, 0, 0);
+
+    tctx.save();
+    tctx.beginPath();
+    tctx.ellipse(cx, cy, rx, ry, 0, 0, TAU);
+    tctx.clip();
+    tctx.fillStyle = '#0A0A0B';
+    tctx.fillRect(0, 0, w, h);
+    tctx.imageSmoothingEnabled = true;
+    tctx.imageSmoothingQuality = 'high';
+    tctx.globalCompositeOperation = 'lighter';
+    tctx.drawImage(buf, cx - rx * 1.1, cy - ry * 1.1, rx * 2.2, ry * 2.2);
+    tctx.globalCompositeOperation = 'source-over';
+    var sh = tctx.createRadialGradient(cx - rx * 0.35, cy - ry * 0.45, rx * 0.1, cx, cy, ry * 1.15);
+    sh.addColorStop(0, 'rgba(255,255,255,.05)');
+    sh.addColorStop(0.65, 'rgba(0,0,0,0)');
+    sh.addColorStop(1, 'rgba(0,0,0,.55)');
+    tctx.fillStyle = sh;
+    tctx.fillRect(0, 0, w, h);
+    tctx.restore();
+
+    tctx.lineWidth = Math.max(1, DPR);
+    tctx.strokeStyle = GRIDC;
+    tctx.beginPath(); tctx.ellipse(cx, cy, rx, ry, 0, 0, TAU); tctx.stroke();
+    tctx.beginPath();
+    tctx.moveTo(cx - rx * 0.13, cy - ry * 0.985);
+    tctx.lineTo(cx, cy - ry * 1.10);
+    tctx.lineTo(cx + rx * 0.13, cy - ry * 0.985);
+    tctx.stroke();
+    [-1, 1].forEach(function (sg) {
+      tctx.beginPath();
+      tctx.ellipse(cx + sg * rx * 0.99, cy - ry * 0.08, rx * 0.07, ry * 0.11, 0, 0, TAU);
+      tctx.stroke();
+    });
+
+    var RR = Math.max(2.2, rx * 0.045);
+    OPT.forEach(function (op) {
+      var px = cx + op.x * rx, py = cy + op.y * ry;
+      tctx.beginPath(); tctx.arc(px, py, RR, 0, TAU);
+      if (op.src) { tctx.fillStyle = 'rgba(255,122,24,.85)'; tctx.fill(); }
+      else { tctx.strokeStyle = 'rgba(201,195,187,.7)'; tctx.lineWidth = Math.max(1, DPR); tctx.stroke(); }
+    });
+    CH.forEach(function (ch, ix) {
+      var sv = Math.min(1, Math.abs(v[ix]) / SCALE);
+      if (sv < 0.12) return;
+      tctx.beginPath();
+      tctx.arc(cx + ch.x * rx, cy + ch.y * ry, RR * (1.6 + sv * 1.5), 0, TAU);
+      tctx.strokeStyle = v[ix] >= 0
+        ? 'rgba(255,122,24,' + (0.15 + sv * 0.4) + ')'
+        : 'rgba(76,127,184,' + (0.15 + sv * 0.4) + ')';
+      tctx.lineWidth = Math.max(1, DPR);
+      tctx.stroke();
+    });
+
+    tctx.font = '500 ' + (9.5 * DPR) + 'px "IBM Plex Mono", monospace';
+    tctx.fillStyle = ASH;
+    tctx.textAlign = 'center'; tctx.textBaseline = 'alphabetic';
+    tctx.fillText('ANTERIOR', cx, cy - ry - 9 * DPR);
+    tctx.textAlign = 'left';  tctx.fillText('L', 3 * DPR, cy + 3 * DPR);
+    tctx.textAlign = 'right'; tctx.fillText('R', w - 3 * DPR, cy + 3 * DPR);
+  }
+
+  var WIN = 42, YMIN = -0.55, YMAX = 0.95;
+  function drawTrace(tt){
+    var w = traceCv.width, h = traceCv.height;
+    rctx.clearRect(0, 0, w, h);
+    var padL = 34 * DPR, padR = 10 * DPR, padT = 10 * DPR, padB = 20 * DPR;
+    var pw = w - padL - padR, ph = h - padT - padB;
+    var t0 = tt - WIN;
+    var X = function (x) { return padL + (x - t0) / WIN * pw; };
+    var Y = function (y) { return padT + (YMAX - y) / (YMAX - YMIN) * ph; };
+
+    var base = Math.floor(tt / CYCLE) * CYCLE, kk, off, a, z;
+    for (kk = -1; kk <= 1; kk++) {
+      off = base + kk * CYCLE;
+      BLOCKS.forEach(function (bl) {
+        if (!bl.gain) return;
+        a = Math.max(t0, bl.t0 + off); z = Math.min(tt, bl.t1 + off);
+        if (z <= a) return;
+        rctx.fillStyle = (bl === DUAL) ? 'rgba(255,122,24,.075)' : 'rgba(255,122,24,.035)';
+        rctx.fillRect(X(a), padT, X(z) - X(a), ph);
+        rctx.strokeStyle = 'rgba(255,122,24,.28)';
+        rctx.setLineDash([3 * DPR, 3 * DPR]);
+        rctx.lineWidth = 1;
+        rctx.beginPath(); rctx.moveTo(X(a), padT); rctx.lineTo(X(a), padT + ph); rctx.stroke();
+        rctx.setLineDash([]);
+      });
+    }
+
+    rctx.font = '400 ' + (9.5 * DPR) + 'px "IBM Plex Mono", monospace';
+    rctx.textAlign = 'right'; rctx.textBaseline = 'middle';
+    [-0.4, 0, 0.4, 0.8].forEach(function (g) {
+      var y = Y(g);
+      rctx.strokeStyle = (g === 0) ? 'rgba(201,195,187,.22)' : 'rgba(38,36,31,.9)';
+      rctx.lineWidth = 1;
+      rctx.beginPath(); rctx.moveTo(padL, y); rctx.lineTo(padL + pw, y); rctx.stroke();
+      rctx.fillStyle = ASH;
+      rctx.fillText(g > 0 ? '+' + g.toFixed(1) : g.toFixed(1), padL - 6 * DPR, y);
+    });
+
+    var step = Math.max(1, Math.round(WIN * FS / Math.max(1, pw / DPR) / 1.5));
+    [[hbr, HBR, 0.42], [hbo, HBO, 0.72]].forEach(function (set) {
+      var data = set[0], col = set[1], alpha = set[2], q, ii, x, y, lead;
+      for (q = 0; q < NCH; q++) {
+        lead = (q === 0 || q === 3 || q === 4 || q === 7);
+        rctx.beginPath();
+        for (ii = 0; ii <= WIN * FS; ii += step) {
+          var ts = t0 + ii / FS;
+          x = X(ts);
+          y = Y(Math.max(YMIN, Math.min(YMAX, at(data[q], ts))));
+          if (ii === 0) rctx.moveTo(x, y); else rctx.lineTo(x, y);
+        }
+        rctx.strokeStyle = col;
+        rctx.globalAlpha = lead ? alpha : alpha * 0.42;
+        rctx.lineWidth = (lead ? 1.6 : 1.0) * DPR;
+        rctx.lineJoin = 'round';
+        rctx.stroke();
+      }
+    });
+    rctx.globalAlpha = 1;
+
+    var xNow = X(tt), q2;
+    rctx.strokeStyle = 'rgba(201,195,187,.28)';
+    rctx.lineWidth = 1;
+    rctx.beginPath(); rctx.moveTo(xNow, padT); rctx.lineTo(xNow, padT + ph); rctx.stroke();
+    rctx.fillStyle = HBO; rctx.globalAlpha = 0.8;
+    for (q2 = 0; q2 < NCH; q2++) {
+      var yy = Y(Math.max(YMIN, Math.min(YMAX, at(hbo[q2], tt))));
+      rctx.beginPath(); rctx.arc(xNow, yy, 1.6 * DPR, 0, TAU); rctx.fill();
+    }
+    rctx.globalAlpha = 1;
+
+    rctx.fillStyle = ASH;
+    rctx.textAlign = 'left'; rctx.textBaseline = 'top';
+    rctx.fillText('\u0394[Hb]  \u03BCM', padL + 4 * DPR, padT + 2 * DPR);
+    rctx.textAlign = 'right'; rctx.textBaseline = 'bottom';
+    rctx.fillText('t = ' + (tt % CYCLE).toFixed(1) + ' s', padL + pw, h - 4 * DPR);
+  }
+
+  /* ---------- 3. loop ---------- */
+  var lastLabel = '';
+  function render(tt){
+    drawTopo(tt);
+    drawTrace(tt);
+    var bl = blockAt(((tt % CYCLE) + CYCLE) % CYCLE);
+    if (bl.label !== lastLabel) {
+      lastLabel = bl.label;
+      condEl.textContent = bl.label;
+      condEl.setAttribute('data-state', bl.state);
+    }
+  }
+
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    render(78);                       /* still frame at the dual-task peak */
+  } else {
+    var start = performance.now();
+    (function loop(now){
+      render((now - start) / 1000 * 1.6);
+      requestAnimationFrame(loop);
+    })(start);
+  }
+})();
 </script>
 </body>
 </html>

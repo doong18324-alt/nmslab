@@ -216,20 +216,50 @@ footer a:hover{color:var(--hbo);border-color:var(--hbo)}
 .sp .hd{font-family:'Archivo';font-weight:800;font-size:22px;letter-spacing:-.02em;
   color:var(--bone);margin-bottom:16px;display:block}
 
+
+/* ---------- language switcher ---------- */
+.navright{display:flex;align-items:center;gap:26px}
+.langsw{display:flex;align-items:center;border:1px solid var(--grid);border-radius:2px;
+  overflow:hidden;flex:none}
+.langsw button{appearance:none;background:transparent;border:0;cursor:pointer;
+  font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.06em;line-height:1;
+  color:var(--ash);padding:7px 9px;transition:color .18s,background .18s}
+.langsw button + button{border-left:1px solid var(--grid)}
+.langsw button:hover{color:var(--bone);background:rgba(255,122,24,.07)}
+.langsw button[aria-pressed="true"]{color:var(--ink);background:var(--hbo);font-weight:500}
+@media(max-width:640px){.navright{gap:14px}.langsw button{padding:6px 7px;font-size:10px}}
+
+/* Archivo has no Hangul/CJK glyphs — swap the display face per language */
+html[lang="ko"] body{font-family:'IBM Plex Sans KR','IBM Plex Sans',system-ui,sans-serif}
+html[lang="ja"] body{font-family:'IBM Plex Sans JP','IBM Plex Sans',system-ui,sans-serif}
+html[lang="zh"] body{font-family:'Noto Sans SC','IBM Plex Sans',system-ui,sans-serif}
+html[lang="ko"] h1,html[lang="ko"] h2,html[lang="ko"] h3,html[lang="ko"] h4,html[lang="ko"] .sp .hd{
+  font-family:'IBM Plex Sans KR',sans-serif;font-weight:700;letter-spacing:-.02em}
+html[lang="ja"] h1,html[lang="ja"] h2,html[lang="ja"] h3,html[lang="ja"] h4,html[lang="ja"] .sp .hd{
+  font-family:'IBM Plex Sans JP',sans-serif;font-weight:700;letter-spacing:-.01em}
+html[lang="zh"] h1,html[lang="zh"] h2,html[lang="zh"] h3,html[lang="zh"] h4,html[lang="zh"] .sp .hd{
+  font-family:'Noto Sans SC',sans-serif;font-weight:700;letter-spacing:-.01em}
+html:not([lang="en"]) h1{line-height:1.28}
+html:not([lang="en"]) .tag,html:not([lang="en"]) .instr,html:not([lang="en"]) .eyebrow,
+html:not([lang="en"]) .links a,html:not([lang="en"]) .rolebar .n,html:not([lang="en"]) .role{
+  text-transform:none;letter-spacing:.04em}
 </style>
 </head>
-<body>
+<body data-i18n-title="doc.people">
 
 <nav>
   <div class="navin">
     <a class="mark" href="index.html">
       <i class="dot"></i><b>NMS&nbsp;LAB</b><span>Novel Medical Science</span>
     </a>
-    <div class="links">
-      <a href="research.html">Research</a>
-      <a href="people.html" aria-current="page">People</a>
-      <a href="publications.html">Publications</a>
-      <a href="contact.html">Contact</a>
+    <div class="navright">
+      <div class="links">
+      <a href="research.html" data-i18n="nav.research">Research</a>
+      <a href="people.html" data-i18n="nav.people" aria-current="page">People</a>
+      <a href="publications.html" data-i18n="nav.pubs">Publications</a>
+      <a href="contact.html" data-i18n="nav.contact">Contact</a>
+    </div>
+      <div class="langsw" role="group" aria-label="Language / 언어"></div>
     </div>
   </div>
 </nav>
@@ -237,9 +267,9 @@ footer a:hover{color:var(--hbo);border-color:var(--hbo)}
 <main class="wrap">
 
   <div class="phead">
-    <p class="eyebrow">People</p>
-    <h1>Who runs the recordings.</h1>
-    <p class="lede">
+    <p class="eyebrow" data-i18n="pe.eyebrow">People</p>
+    <h1 data-i18n="pe.h1">Who runs the recordings.</h1>
+    <p class="lede" data-i18n="pe.lede">
       A small group of clinicians and scientists. Everyone here collects data as well as
       analyses it — the two are not separable in this lab.
     </p>
@@ -248,8 +278,8 @@ footer a:hover{color:var(--hbo);border-color:var(--hbo)}
   <!-- ============ FACULTY ============ -->
   <section class="first rv">
     <div class="rolebar">
-      <h2>Faculty</h2>
-      <span class="n mono">Principal investigator</span>
+      <h2 data-i18n="pe.faculty">Faculty</h2>
+      <span class="n mono" data-i18n="pe.faculty.n">Principal investigator</span>
     </div>
 
     <div class="pi">
@@ -258,16 +288,16 @@ footer a:hover{color:var(--hbo);border-color:var(--hbo)}
       </div>
       <div>
         <h3>Hyunjoong Kim</h3>
-        <p class="role">PT, PhD · Principal Investigator</p>
-        <p>
+        <p class="role" data-i18n="pe.pi.role">PT, PhD · Principal Investigator</p>
+        <p data-i18n="pe.pi.bio">
           Assistant Professor and Chair, Department of Senior Exercise Prescription,
           Gwangju Health University. His work joins three things that are usually kept apart: how the older cortex
           behaves under physical load, why pain persists after tissue has healed, and what
           it takes for a prediction model to survive contact with a real community.
         </p>
         <ul>
-          <li>Director · AI Sports Tech Research Center</li>
-          <li>fNIRS · non-invasive brain stimulation · pain neuroscience</li>
+          <li data-i18n="pe.pi.li1">Director · AI Sports Tech Research Center</li>
+          <li data-i18n="pe.pi.li2">fNIRS · non-invasive brain stimulation · pain neuroscience</li>
           <li>ORCID 0000-0001-6538-3872</li>
         </ul>
       </div>
@@ -277,30 +307,30 @@ footer a:hover{color:var(--hbo);border-color:var(--hbo)}
   <!-- ============ RESEARCHERS ============ -->
   <section class="rv">
     <div class="rolebar">
-      <h2>Researchers</h2>
-      <span class="n mono">Postdoctoral · Research staff</span>
+      <h2 data-i18n="pe.res">Researchers</h2>
+      <span class="n mono" data-i18n="pe.res.n">Postdoctoral · Research staff</span>
     </div>
 
     <div class="people">
       <article class="person">
         <div class="avatar"><!-- <img src="assets/img/p1.jpg" alt=""> --></div>
         <h4>Name Surname</h4>
-        <p class="role">Postdoctoral Researcher</p>
-        <p>Prefrontal haemodynamics during dual-task gait in older adults.</p>
+        <p class="role" data-i18n="role.postdoc">Postdoctoral Researcher</p>
+        <p data-i18n="pe.b1">Prefrontal haemodynamics during dual-task gait in older adults.</p>
       </article>
 
       <article class="person">
         <div class="avatar"><!-- <img src="assets/img/p2.jpg" alt=""> --></div>
         <h4>Name Surname</h4>
-        <p class="role">Research Fellow</p>
-        <p>Non-invasive brain stimulation protocols in chronic musculoskeletal pain.</p>
+        <p class="role" data-i18n="role.fellow">Research Fellow</p>
+        <p data-i18n="pe.b2">Non-invasive brain stimulation protocols in chronic musculoskeletal pain.</p>
       </article>
 
       <article class="person">
         <div class="avatar"><!-- <img src="assets/img/p3.jpg" alt=""> --></div>
         <h4>Name Surname</h4>
-        <p class="role">Research Assistant</p>
-        <p>Community cohort recruitment and multimodal data collection.</p>
+        <p class="role" data-i18n="role.ra">Research Assistant</p>
+        <p data-i18n="pe.b3">Community cohort recruitment and multimodal data collection.</p>
       </article>
     </div>
   </section>
@@ -308,30 +338,30 @@ footer a:hover{color:var(--hbo);border-color:var(--hbo)}
   <!-- ============ GRADUATE STUDENTS ============ -->
   <section class="rv">
     <div class="rolebar">
-      <h2>Graduate students</h2>
-      <span class="n mono">MSc · PhD candidates</span>
+      <h2 data-i18n="pe.grad">Graduate students</h2>
+      <span class="n mono" data-i18n="pe.grad.n">MSc · PhD candidates</span>
     </div>
 
     <div class="people">
       <article class="person">
         <div class="avatar"></div>
         <h4>Name Surname</h4>
-        <p class="role">PhD Candidate</p>
-        <p>Frailty phenotyping and cortical activation asymmetry.</p>
+        <p class="role" data-i18n="role.phd">PhD Candidate</p>
+        <p data-i18n="pe.b4">Frailty phenotyping and cortical activation asymmetry.</p>
       </article>
 
       <article class="person">
         <div class="avatar"></div>
         <h4>Name Surname</h4>
-        <p class="role">MSc Student</p>
-        <p>Markerless motion analysis in return-to-sport decision making.</p>
+        <p class="role" data-i18n="role.msc">MSc Student</p>
+        <p data-i18n="pe.b5">Markerless motion analysis in return-to-sport decision making.</p>
       </article>
 
       <article class="person">
         <div class="avatar"></div>
         <h4>Name Surname</h4>
-        <p class="role">MSc Student</p>
-        <p>Heart rate variability as an autonomic marker of frailty.</p>
+        <p class="role" data-i18n="role.msc">MSc Student</p>
+        <p data-i18n="pe.b6">Heart rate variability as an autonomic marker of frailty.</p>
       </article>
     </div>
   </section>
@@ -339,8 +369,8 @@ footer a:hover{color:var(--hbo);border-color:var(--hbo)}
   <!-- ============ ALUMNI ============ -->
   <section class="rv">
     <div class="rolebar">
-      <h2>Alumni</h2>
-      <span class="n mono">Where they went</span>
+      <h2 data-i18n="pe.alum">Alumni</h2>
+      <span class="n mono" data-i18n="pe.alum.n">Where they went</span>
     </div>
     <div class="alumni">
       <span>Name Surname — Clinical PT, hospital</span>
@@ -350,21 +380,21 @@ footer a:hover{color:var(--hbo);border-color:var(--hbo)}
   </section>
 
   <section class="rv">
-    <p class="eyebrow">Openings</p>
-    <h2>We have room for two.</h2>
-    <p class="sec-note">
+    <p class="eyebrow" data-i18n="op.eyebrow">Openings</p>
+    <h2 data-i18n="op.h">We have room for two.</h2>
+    <p class="sec-note" data-i18n="op.note.people">
       We are looking for a graduate student with a background in physical therapy, kinesiology
       or biomedical engineering, and a postdoctoral researcher with fNIRS or signal-processing
       experience. Write with a CV and one paragraph on what you want to measure.
     </p>
     <div class="cta" style="margin-top:0">
-      <a class="btn btn-a" href="contact.html">Contact the lab</a>
+      <a class="btn btn-a" href="contact.html" data-i18n="btn.contactlab">Contact the lab</a>
     </div>
   </section>
 
   <footer>
-    <span>NMS Lab · Novel Medical Science · Gwangju Health University</span>
-    <span>Gwangju, Republic of Korea · <a href="https://orcid.org/0000-0001-6538-3872">0000-0001-6538-3872</a></span>
+    <span data-i18n="foot.org">NMS Lab · Novel Medical Science · Gwangju Health University</span>
+    <span><span data-i18n="foot.loc">Gwangju, Republic of Korea</span> · <a href="https://orcid.org/0000-0001-6538-3872">0000-0001-6538-3872</a></span>
   </footer>
 </main>
 
@@ -485,5 +515,6 @@ footer a:hover{color:var(--hbo);border-color:var(--hbo)}
 })();
 
 </script>
+<script src="i18n.js"></script>
 </body>
 </html>

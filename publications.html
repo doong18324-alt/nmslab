@@ -216,28 +216,58 @@ footer a:hover{color:var(--hbo);border-color:var(--hbo)}
 .sp .hd{font-family:'Archivo';font-weight:800;font-size:22px;letter-spacing:-.02em;
   color:var(--bone);margin-bottom:16px;display:block}
 
+
+/* ---------- language switcher ---------- */
+.navright{display:flex;align-items:center;gap:26px}
+.langsw{display:flex;align-items:center;border:1px solid var(--grid);border-radius:2px;
+  overflow:hidden;flex:none}
+.langsw button{appearance:none;background:transparent;border:0;cursor:pointer;
+  font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.06em;line-height:1;
+  color:var(--ash);padding:7px 9px;transition:color .18s,background .18s}
+.langsw button + button{border-left:1px solid var(--grid)}
+.langsw button:hover{color:var(--bone);background:rgba(255,122,24,.07)}
+.langsw button[aria-pressed="true"]{color:var(--ink);background:var(--hbo);font-weight:500}
+@media(max-width:640px){.navright{gap:14px}.langsw button{padding:6px 7px;font-size:10px}}
+
+/* Archivo has no Hangul/CJK glyphs — swap the display face per language */
+html[lang="ko"] body{font-family:'IBM Plex Sans KR','IBM Plex Sans',system-ui,sans-serif}
+html[lang="ja"] body{font-family:'IBM Plex Sans JP','IBM Plex Sans',system-ui,sans-serif}
+html[lang="zh"] body{font-family:'Noto Sans SC','IBM Plex Sans',system-ui,sans-serif}
+html[lang="ko"] h1,html[lang="ko"] h2,html[lang="ko"] h3,html[lang="ko"] h4,html[lang="ko"] .sp .hd{
+  font-family:'IBM Plex Sans KR',sans-serif;font-weight:700;letter-spacing:-.02em}
+html[lang="ja"] h1,html[lang="ja"] h2,html[lang="ja"] h3,html[lang="ja"] h4,html[lang="ja"] .sp .hd{
+  font-family:'IBM Plex Sans JP',sans-serif;font-weight:700;letter-spacing:-.01em}
+html[lang="zh"] h1,html[lang="zh"] h2,html[lang="zh"] h3,html[lang="zh"] h4,html[lang="zh"] .sp .hd{
+  font-family:'Noto Sans SC',sans-serif;font-weight:700;letter-spacing:-.01em}
+html:not([lang="en"]) h1{line-height:1.28}
+html:not([lang="en"]) .tag,html:not([lang="en"]) .instr,html:not([lang="en"]) .eyebrow,
+html:not([lang="en"]) .links a,html:not([lang="en"]) .rolebar .n,html:not([lang="en"]) .role{
+  text-transform:none;letter-spacing:.04em}
 </style>
 </head>
-<body>
+<body data-i18n-title="doc.pubs">
 <nav>
   <div class="navin">
     <a class="mark" href="index.html">
       <i class="dot"></i><b>NMS&nbsp;LAB</b><span>Novel Medical Science</span>
     </a>
-    <div class="links">
-      <a href="research.html">Research</a>
-      <a href="people.html">People</a>
-      <a href="publications.html" aria-current="page">Publications</a>
-      <a href="contact.html">Contact</a>
+    <div class="navright">
+      <div class="links">
+      <a href="research.html" data-i18n="nav.research">Research</a>
+      <a href="people.html" data-i18n="nav.people">People</a>
+      <a href="publications.html" data-i18n="nav.pubs" aria-current="page">Publications</a>
+      <a href="contact.html" data-i18n="nav.contact">Contact</a>
+    </div>
+      <div class="langsw" role="group" aria-label="Language / 언어"></div>
     </div>
   </div>
 </nav>
 <main class="wrap">
 
   <div class="phead">
-    <p class="eyebrow">Publications</p>
-    <h1>The record.</h1>
-    <p class="lede">
+    <p class="eyebrow" data-i18n="pb.eyebrow">Publications</p>
+    <h1 data-i18n="pb.h1">The record.</h1>
+    <p class="lede" data-i18n="pb.lede">
       Peer-reviewed output across neurorehabilitation, pain science and geriatric exercise
       medicine. Every entry links to its DOI. The complete and current list is on ORCID.
     </p>
@@ -247,11 +277,11 @@ footer a:hover{color:var(--hbo);border-color:var(--hbo)}
     <div class="statpair">
       <div class="sp">
         <b>56</b>
-        <span class="k"><em>Peer-reviewed papers</em><br>SCI(E) / ESCI / KCI indexed</span>
+        <span class="k" data-i18n="stat.papers"><em>Peer-reviewed papers</em><br>SCI(E) / ESCI / KCI indexed</span>
       </div>
       <div class="sp">
-        <span class="hd">Review &amp; editorial</span>
-        <span class="k"><em>41 manuscripts reviewed</em> across 19 journals<br>
+        <span class="hd" data-i18n="stat.rev.hd">Review &amp; editorial</span>
+        <span class="k" data-i18n="stat.rev.k"><em>41 manuscripts reviewed</em> across 19 journals<br>
         <em>Section Board Member</em> &middot; Medicina (MDPI)</span>
       </div>
     </div>
@@ -494,8 +524,8 @@ footer a:hover{color:var(--hbo);border-color:var(--hbo)}
   </section>
 
   <footer>
-    <span>NMS Lab &middot; Novel Medical Science &middot; Gwangju Health University</span>
-    <span>Gwangju, Republic of Korea &middot; <a href="https://orcid.org/0000-0001-6538-3872">0000-0001-6538-3872</a></span>
+    <span data-i18n="foot.org">NMS Lab &middot; Novel Medical Science &middot; Gwangju Health University</span>
+    <span><span data-i18n="foot.loc">Gwangju, Republic of Korea</span> &middot; <a href="https://orcid.org/0000-0001-6538-3872">0000-0001-6538-3872</a></span>
   </footer>
 </main>
 <script>
@@ -615,5 +645,6 @@ footer a:hover{color:var(--hbo);border-color:var(--hbo)}
 })();
 
 </script>
+<script src="i18n.js"></script>
 </body>
 </html>

@@ -216,20 +216,50 @@ footer a:hover{color:var(--hbo);border-color:var(--hbo)}
 .sp .hd{font-family:'Archivo';font-weight:800;font-size:22px;letter-spacing:-.02em;
   color:var(--bone);margin-bottom:16px;display:block}
 
+
+/* ---------- language switcher ---------- */
+.navright{display:flex;align-items:center;gap:26px}
+.langsw{display:flex;align-items:center;border:1px solid var(--grid);border-radius:2px;
+  overflow:hidden;flex:none}
+.langsw button{appearance:none;background:transparent;border:0;cursor:pointer;
+  font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.06em;line-height:1;
+  color:var(--ash);padding:7px 9px;transition:color .18s,background .18s}
+.langsw button + button{border-left:1px solid var(--grid)}
+.langsw button:hover{color:var(--bone);background:rgba(255,122,24,.07)}
+.langsw button[aria-pressed="true"]{color:var(--ink);background:var(--hbo);font-weight:500}
+@media(max-width:640px){.navright{gap:14px}.langsw button{padding:6px 7px;font-size:10px}}
+
+/* Archivo has no Hangul/CJK glyphs — swap the display face per language */
+html[lang="ko"] body{font-family:'IBM Plex Sans KR','IBM Plex Sans',system-ui,sans-serif}
+html[lang="ja"] body{font-family:'IBM Plex Sans JP','IBM Plex Sans',system-ui,sans-serif}
+html[lang="zh"] body{font-family:'Noto Sans SC','IBM Plex Sans',system-ui,sans-serif}
+html[lang="ko"] h1,html[lang="ko"] h2,html[lang="ko"] h3,html[lang="ko"] h4,html[lang="ko"] .sp .hd{
+  font-family:'IBM Plex Sans KR',sans-serif;font-weight:700;letter-spacing:-.02em}
+html[lang="ja"] h1,html[lang="ja"] h2,html[lang="ja"] h3,html[lang="ja"] h4,html[lang="ja"] .sp .hd{
+  font-family:'IBM Plex Sans JP',sans-serif;font-weight:700;letter-spacing:-.01em}
+html[lang="zh"] h1,html[lang="zh"] h2,html[lang="zh"] h3,html[lang="zh"] h4,html[lang="zh"] .sp .hd{
+  font-family:'Noto Sans SC',sans-serif;font-weight:700;letter-spacing:-.01em}
+html:not([lang="en"]) h1{line-height:1.28}
+html:not([lang="en"]) .tag,html:not([lang="en"]) .instr,html:not([lang="en"]) .eyebrow,
+html:not([lang="en"]) .links a,html:not([lang="en"]) .rolebar .n,html:not([lang="en"]) .role{
+  text-transform:none;letter-spacing:.04em}
 </style>
 </head>
-<body>
+<body data-i18n-title="doc.research">
 
 <nav>
   <div class="navin">
     <a class="mark" href="index.html">
       <i class="dot"></i><b>NMS&nbsp;LAB</b><span>Novel Medical Science</span>
     </a>
-    <div class="links">
-      <a href="research.html" aria-current="page">Research</a>
-      <a href="people.html">People</a>
-      <a href="publications.html">Publications</a>
-      <a href="contact.html">Contact</a>
+    <div class="navright">
+      <div class="links">
+      <a href="research.html" data-i18n="nav.research" aria-current="page">Research</a>
+      <a href="people.html" data-i18n="nav.people">People</a>
+      <a href="publications.html" data-i18n="nav.pubs">Publications</a>
+      <a href="contact.html" data-i18n="nav.contact">Contact</a>
+    </div>
+      <div class="langsw" role="group" aria-label="Language / 언어"></div>
     </div>
   </div>
 </nav>
@@ -237,9 +267,9 @@ footer a:hover{color:var(--hbo);border-color:var(--hbo)}
 <main class="wrap">
 
   <div class="phead">
-    <p class="eyebrow">Research</p>
-    <h1>Four questions, one instrument set.</h1>
-    <p class="lede">
+    <p class="eyebrow" data-i18n="rs.eyebrow">Research</p>
+    <h1 data-i18n="areas.h">Four questions, one instrument set.</h1>
+    <p class="lede" data-i18n="areas.note">
       Ageing, pain and athletic performance are usually studied by different people in
       different buildings. They share a substrate: how the cortex allocates resources to a
       body under load. We study that substrate directly.
@@ -249,32 +279,32 @@ footer a:hover{color:var(--hbo);border-color:var(--hbo)}
   <section class="first rv">
     <div class="areas">
       <article class="area">
-        <span class="instr">fNIRS · Gait · Dual-task</span>
-        <h3>Frailty as a brain phenotype</h3>
-        <p>Frailty is scored at the body but decided in the cortex. We phenotype older adults
+        <span class="instr" data-i18n="a1.instr">fNIRS · Gait · Dual-task</span>
+        <h3 data-i18n="a1.h">Frailty as a brain phenotype</h3>
+        <p data-i18n="a1.p.long">Frailty is scored at the body but decided in the cortex. We phenotype older adults
            across physical, cognitive, psychological and social axes, then ask which prefrontal
            signatures separate the subtypes — including during curved and dual-task walking,
            where compensation becomes visible.</p>
       </article>
       <article class="area">
-        <span class="instr">tDCS · rTMS · Quantitative sensory testing</span>
-        <h3>Pain that outlives its injury</h3>
-        <p>Central sensitisation, pain neuroscience education, and non-invasive brain
+        <span class="instr" data-i18n="a2.instr">tDCS · rTMS · Quantitative sensory testing</span>
+        <h3 data-i18n="a2.h">Pain that outlives its injury</h3>
+        <p data-i18n="a2.p.long">Central sensitisation, pain neuroscience education, and non-invasive brain
            stimulation in chronic musculoskeletal pain — where the tissue has healed and
            the map has not. Our trials pair PNE with manual therapy, and tDCS with task
            training, to ask what actually changes the central representation.</p>
       </article>
       <article class="area">
-        <span class="instr">3D motion · IMU · Joint mobilization</span>
-        <h3>Movement under load</h3>
-        <p>Orthopaedic manual therapy and sports medicine: chronic ankle instability, joint
+        <span class="instr" data-i18n="a3.instr2">3D motion · IMU · Joint mobilization</span>
+        <h3 data-i18n="a3.h">Movement under load</h3>
+        <p data-i18n="a3.p.long">Orthopaedic manual therapy and sports medicine: chronic ankle instability, joint
            mobilization strategies, blood flow restriction, and return-to-sport decisions.
            The recurring question is what separates a compensation from a recovery.</p>
       </article>
       <article class="area">
-        <span class="instr">Multimodal AI · Community cohorts</span>
-        <h3>Prediction that reaches the clinic</h3>
-        <p>Models built on cohort, wearable and neuroimaging data — validated in living labs,
+        <span class="instr" data-i18n="a4.instr">Multimodal AI · Community cohorts</span>
+        <h3 data-i18n="a4.h">Prediction that reaches the clinic</h3>
+        <p data-i18n="a4.p.long">Models built on cohort, wearable and neuroimaging data — validated in living labs,
            not only in held-out test sets. Urban and rural sites are built into the design,
            because a model that only works downtown is not a model.</p>
       </article>
@@ -282,42 +312,42 @@ footer a:hover{color:var(--hbo);border-color:var(--hbo)}
   </section>
 
   <section class="rv">
-    <p class="eyebrow">Infrastructure</p>
-    <h2>What we can actually measure.</h2>
-    <p class="sec-note">
+    <p class="eyebrow" data-i18n="inf.eyebrow">Infrastructure</p>
+    <h2 data-i18n="inf.h">What we can actually measure.</h2>
+    <p class="sec-note" data-i18n="inf.note">
       A lab is its instruments and its access to people. We have both, and the second one is
       harder to get.
     </p>
 
     <div class="fac">
       <div>
-        <p class="eyebrow" style="margin-bottom:16px">In the lab</p>
+        <p class="eyebrow" style="margin-bottom:16px" data-i18n="inf.lab">In the lab</p>
         <ul>
-          <li><b>fNIRS ×2</b> — prefrontal montage, ambulatory recording</li>
-          <li><b>Non-invasive brain stimulation</b> — tDCS protocols</li>
-          <li><b>Autonomic monitoring</b> — HRV, actigraphy</li>
-          <li><b>Motion analysis</b> — markerless 3D, IMU</li>
+          <li data-i18n="inf.l1"><b>fNIRS ×2</b> — prefrontal montage, ambulatory recording</li>
+          <li data-i18n="inf.l2"><b>Non-invasive brain stimulation</b> — tDCS protocols</li>
+          <li data-i18n="inf.l3"><b>Autonomic monitoring</b> — HRV, actigraphy</li>
+          <li data-i18n="inf.l4"><b>Motion analysis</b> — markerless 3D, IMU</li>
         </ul>
       </div>
       <div>
-        <p class="eyebrow" style="margin-bottom:16px">In the field</p>
+        <p class="eyebrow" style="margin-bottom:16px" data-i18n="inf.field">In the field</p>
         <ul>
-          <li><b>Smart Care Village</b> — 5,000+ residents, longitudinal access</li>
-          <li><b>AI Healthcare Tower</b> — urban living-lab site</li>
-          <li><b>Health management centres ×3</b> — community recruitment</li>
-          <li><b>Urban–rural design</b> — built-in external validity</li>
+          <li data-i18n="inf.f1"><b>Smart Care Village</b> — 5,000+ residents, longitudinal access</li>
+          <li data-i18n="inf.f2"><b>AI Healthcare Tower</b> — urban living-lab site</li>
+          <li data-i18n="inf.f3"><b>Health management centres ×3</b> — community recruitment</li>
+          <li data-i18n="inf.f4"><b>Urban–rural design</b> — built-in external validity</li>
         </ul>
       </div>
     </div>
 
     <div class="cta">
-      <a class="btn btn-b" href="publications.html">See the publications</a>
+      <a class="btn btn-b" href="publications.html" data-i18n="btn.seepubs">See the publications</a>
     </div>
   </section>
 
   <footer>
-    <span>NMS Lab &middot; Novel Medical Science &middot; Gwangju Health University</span>
-    <span>Gwangju, Republic of Korea &middot; <a href="https://orcid.org/0000-0001-6538-3872">0000-0001-6538-3872</a></span>
+    <span data-i18n="foot.org">NMS Lab &middot; Novel Medical Science &middot; Gwangju Health University</span>
+    <span><span data-i18n="foot.loc">Gwangju, Republic of Korea</span> &middot; <a href="https://orcid.org/0000-0001-6538-3872">0000-0001-6538-3872</a></span>
   </footer>
 </main>
 
@@ -438,5 +468,6 @@ footer a:hover{color:var(--hbo);border-color:var(--hbo)}
 })();
 
 </script>
+<script src="i18n.js"></script>
 </body>
 </html>

@@ -216,20 +216,50 @@ footer a:hover{color:var(--hbo);border-color:var(--hbo)}
 .sp .hd{font-family:'Archivo';font-weight:800;font-size:22px;letter-spacing:-.02em;
   color:var(--bone);margin-bottom:16px;display:block}
 
+
+/* ---------- language switcher ---------- */
+.navright{display:flex;align-items:center;gap:26px}
+.langsw{display:flex;align-items:center;border:1px solid var(--grid);border-radius:2px;
+  overflow:hidden;flex:none}
+.langsw button{appearance:none;background:transparent;border:0;cursor:pointer;
+  font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.06em;line-height:1;
+  color:var(--ash);padding:7px 9px;transition:color .18s,background .18s}
+.langsw button + button{border-left:1px solid var(--grid)}
+.langsw button:hover{color:var(--bone);background:rgba(255,122,24,.07)}
+.langsw button[aria-pressed="true"]{color:var(--ink);background:var(--hbo);font-weight:500}
+@media(max-width:640px){.navright{gap:14px}.langsw button{padding:6px 7px;font-size:10px}}
+
+/* Archivo has no Hangul/CJK glyphs — swap the display face per language */
+html[lang="ko"] body{font-family:'IBM Plex Sans KR','IBM Plex Sans',system-ui,sans-serif}
+html[lang="ja"] body{font-family:'IBM Plex Sans JP','IBM Plex Sans',system-ui,sans-serif}
+html[lang="zh"] body{font-family:'Noto Sans SC','IBM Plex Sans',system-ui,sans-serif}
+html[lang="ko"] h1,html[lang="ko"] h2,html[lang="ko"] h3,html[lang="ko"] h4,html[lang="ko"] .sp .hd{
+  font-family:'IBM Plex Sans KR',sans-serif;font-weight:700;letter-spacing:-.02em}
+html[lang="ja"] h1,html[lang="ja"] h2,html[lang="ja"] h3,html[lang="ja"] h4,html[lang="ja"] .sp .hd{
+  font-family:'IBM Plex Sans JP',sans-serif;font-weight:700;letter-spacing:-.01em}
+html[lang="zh"] h1,html[lang="zh"] h2,html[lang="zh"] h3,html[lang="zh"] h4,html[lang="zh"] .sp .hd{
+  font-family:'Noto Sans SC',sans-serif;font-weight:700;letter-spacing:-.01em}
+html:not([lang="en"]) h1{line-height:1.28}
+html:not([lang="en"]) .tag,html:not([lang="en"]) .instr,html:not([lang="en"]) .eyebrow,
+html:not([lang="en"]) .links a,html:not([lang="en"]) .rolebar .n,html:not([lang="en"]) .role{
+  text-transform:none;letter-spacing:.04em}
 </style>
 </head>
-<body>
+<body data-i18n-title="doc.contact">
 
 <nav>
   <div class="navin">
     <a class="mark" href="index.html">
       <i class="dot"></i><b>NMS&nbsp;LAB</b><span>Novel Medical Science</span>
     </a>
-    <div class="links">
-      <a href="research.html">Research</a>
-      <a href="people.html">People</a>
-      <a href="publications.html">Publications</a>
-      <a href="contact.html" aria-current="page">Contact</a>
+    <div class="navright">
+      <div class="links">
+      <a href="research.html" data-i18n="nav.research">Research</a>
+      <a href="people.html" data-i18n="nav.people">People</a>
+      <a href="publications.html" data-i18n="nav.pubs">Publications</a>
+      <a href="contact.html" data-i18n="nav.contact" aria-current="page">Contact</a>
+    </div>
+      <div class="langsw" role="group" aria-label="Language / 언어"></div>
     </div>
   </div>
 </nav>
@@ -237,9 +267,9 @@ footer a:hover{color:var(--hbo);border-color:var(--hbo)}
 <main class="wrap">
 
   <div class="phead">
-    <p class="eyebrow">Contact</p>
-    <h1>Work with the lab.</h1>
-    <p class="lede">
+    <p class="eyebrow" data-i18n="ct.eyebrow">Contact</p>
+    <h1 data-i18n="join.h">Work with the lab.</h1>
+    <p class="lede" data-i18n="ct.lede">
       We collaborate with clinicians, engineers and international groups working on ageing,
       pain and human performance. Students interested in fNIRS or geriatric rehabilitation
       are welcome to write.
@@ -249,8 +279,8 @@ footer a:hover{color:var(--hbo);border-color:var(--hbo)}
   <section class="first rv">
     <div class="fac">
       <div>
-        <p class="eyebrow" style="margin-bottom:16px">Principal investigator</p>
-        <p style="color:var(--soft)">
+        <p class="eyebrow" style="margin-bottom:16px" data-i18n="ct.pi">Principal investigator</p>
+        <p style="color:var(--soft)" data-i18n="ct.affil">
           <b style="font-weight:500;color:var(--bone)">Hyunjoong Kim</b>, PT, PhD<br>
           Assistant Professor &amp; Chair<br>
           Department of Senior Exercise Prescription<br>
@@ -263,34 +293,34 @@ footer a:hover{color:var(--hbo);border-color:var(--hbo)}
       </div>
 
       <div>
-        <p class="eyebrow" style="margin-bottom:16px">Elsewhere</p>
+        <p class="eyebrow" style="margin-bottom:16px" data-i18n="ct.else">Elsewhere</p>
         <ul>
           <li><b>ORCID</b> — <a href="https://orcid.org/0000-0001-6538-3872" style="color:var(--soft)">0000-0001-6538-3872</a></li>
           <li><b>Google Scholar</b> — [link]</li>
           <li><b>ResearchGate</b> — [link]</li>
-          <li><b>University</b> — Gwangju Health University</li>
+          <li data-i18n="ct.univ"><b>University</b> — Gwangju Health University</li>
         </ul>
       </div>
     </div>
   </section>
 
   <section class="rv">
-    <p class="eyebrow">Openings</p>
-    <h2>We have room for two.</h2>
-    <p class="sec-note">
+    <p class="eyebrow" data-i18n="op.eyebrow">Openings</p>
+    <h2 data-i18n="op.h">We have room for two.</h2>
+    <p class="sec-note" data-i18n="op.note.contact">
       We are looking for a graduate student with a background in physical therapy, kinesiology
       or biomedical engineering, and a postdoctoral researcher with fNIRS or signal-processing
       experience. Write with a CV and one paragraph on what you want to measure — that
       paragraph matters more than the CV.
     </p>
     <div class="cta" style="margin-top:0">
-      <a class="btn btn-b" href="mailto:hjkim@ghu.ac.kr">Write to the lab</a>
+      <a class="btn btn-b" href="mailto:hjkim@ghu.ac.kr" data-i18n="btn.write">Write to the lab</a>
     </div>
   </section>
 
   <footer>
-    <span>NMS Lab &middot; Novel Medical Science &middot; Gwangju Health University</span>
-    <span>Gwangju, Republic of Korea &middot; <a href="https://orcid.org/0000-0001-6538-3872">0000-0001-6538-3872</a></span>
+    <span data-i18n="foot.org">NMS Lab &middot; Novel Medical Science &middot; Gwangju Health University</span>
+    <span><span data-i18n="foot.loc">Gwangju, Republic of Korea</span> &middot; <a href="https://orcid.org/0000-0001-6538-3872">0000-0001-6538-3872</a></span>
   </footer>
 </main>
 
@@ -411,5 +441,6 @@ footer a:hover{color:var(--hbo);border-color:var(--hbo)}
 })();
 
 </script>
+<script src="i18n.js"></script>
 </body>
 </html>

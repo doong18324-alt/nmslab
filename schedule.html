@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Schedule — NMS Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&family=IBM+Plex+Sans+KR:wght@300;400;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0B0B0C; --carbon:#131316; --grid:#26241F;
+    --hbo:#FF7A18; --hbo-dim:#B4540F; --hbr:#4C7FB8;
+    --bone:#EFE9E1; --soft:#C9C3BB; --ash:#8A857E;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ink);color:var(--bone);
+       font-family:'IBM Plex Sans KR',system-ui,sans-serif;font-weight:300;
+       min-height:100vh}
+  a{color:var(--hbo);text-decoration:none}
+
+  /* ── nav ── */
+  nav{display:flex;align-items:center;justify-content:space-between;
+      padding:20px 28px;border-bottom:1px solid var(--grid)}
+  .brand{display:flex;align-items:center;gap:11px;font-family:Archivo,sans-serif;
+         font-weight:900;font-size:17px;letter-spacing:.02em;color:var(--bone)}
+  .brand i{width:11px;height:11px;border-radius:50%;background:var(--hbo);display:block}
+  nav .back{font-family:'IBM Plex Mono';font-size:12px;letter-spacing:.1em;
+            text-transform:uppercase;color:var(--ash)}
+  nav .back:hover{color:var(--bone)}
+
+  .wrap{max-width:1080px;margin:0 auto;padding:56px 24px 90px}
+
+  /* ── 잠금 화면 ── */
+  .gate{max-width:380px;margin:8vh auto;text-align:center}
+  .gate .eyebrow{font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--hbo);margin-bottom:18px}
+  .gate h1{font-family:Archivo,sans-serif;font-weight:900;font-size:30px;margin:0 0 10px}
+  .gate p{color:var(--ash);font-size:14px;line-height:1.6;margin:0 0 28px}
+  .gate input{width:100%;background:var(--carbon);border:1px solid var(--grid);
+    border-radius:3px;color:var(--bone);font-size:16px;padding:14px 16px;
+    font-family:'IBM Plex Mono';letter-spacing:.05em;text-align:center}
+  .gate input:focus{outline:none;border-color:var(--hbo)}
+  .gate button{width:100%;margin-top:12px;background:var(--hbo);color:var(--ink);
+    border:0;border-radius:3px;font-family:'IBM Plex Sans KR';font-weight:700;
+    font-size:15px;padding:14px;cursor:pointer;transition:background .15s}
+  .gate button:hover{background:#ff8a34}
+  .gate .err{color:var(--hbo);font-size:13px;margin-top:14px;min-height:18px;
+    font-family:'IBM Plex Mono'}
+
+  /* ── 앱 화면 ── */
+  #app{display:none}
+  .head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
+        flex-wrap:wrap;margin-bottom:8px}
+  .head .eyebrow{font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--hbo);margin-bottom:10px}
+  .head h1{font-family:Archivo,sans-serif;font-weight:900;font-size:34px;margin:0}
+  .head .status{font-family:'IBM Plex Mono';font-size:11px;color:var(--ash);
+    letter-spacing:.08em}
+  .head .status b{color:var(--hbr);font-weight:500}
+
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:26px 0 20px}
+  .toolbar button{background:var(--carbon);border:1px solid var(--grid);
+    color:var(--soft);border-radius:3px;font-family:'IBM Plex Mono';font-size:12px;
+    letter-spacing:.05em;padding:9px 14px;cursor:pointer;transition:.15s}
+  .toolbar button:hover{border-color:var(--hbo);color:var(--bone)}
+  .toolbar .primary{background:var(--hbo);border-color:var(--hbo);color:var(--ink);font-weight:500}
+  .toolbar .primary:hover{background:#ff8a34}
+  .toolbar .wk{margin-left:auto;display:flex;align-items:center;gap:10px;
+    font-family:'IBM Plex Mono';font-size:12px;color:var(--ash)}
+  .toolbar .wk b{color:var(--bone);font-weight:500}
+
+  /* ── 주간 표 ── */
+  .board{border:1px solid var(--grid);border-radius:3px;overflow:hidden;
+    background:var(--carbon)}
+  .row{display:grid;grid-template-columns:74px repeat(6,1fr);
+    border-bottom:1px solid var(--grid)}
+  .row:last-child{border-bottom:0}
+  .row.h{background:#0F0F11;position:sticky;top:0}
+  .cell{padding:10px 8px;border-right:1px solid var(--grid);min-height:52px;
+    font-size:13px;position:relative}
+  .cell:last-child{border-right:0}
+  .row.h .cell{font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.06em;
+    text-transform:uppercase;color:var(--ash);text-align:center;min-height:0;
+    padding:9px 6px}
+  .cell.t{font-family:'IBM Plex Mono';font-size:11px;color:var(--ash);
+    text-align:center;padding-top:12px}
+  .cell.slot{cursor:pointer;transition:background .12s}
+  .cell.slot:hover{background:rgba(255,122,24,.06)}
+
+  .ev{border-radius:3px;padding:5px 8px;margin-bottom:5px;font-size:12px;
+    line-height:1.35;position:relative;border-left:2px solid}
+  .ev:last-child{margin-bottom:0}
+  .ev .x{position:absolute;top:3px;right:5px;color:var(--ash);cursor:pointer;
+    font-size:13px;opacity:0;transition:opacity .12s;line-height:1}
+  .ev:hover .x{opacity:1}
+  .ev .x:hover{color:var(--hbo)}
+  .ev.exp{background:rgba(255,122,24,.12);border-color:var(--hbo);color:#ffd9b3}
+  .ev.visit{background:rgba(76,127,184,.14);border-color:var(--hbr);color:#cfe0f0}
+  .ev.other{background:rgba(201,195,187,.08);border-color:var(--soft);color:var(--soft)}
+  .ev small{display:block;font-family:'IBM Plex Mono';font-size:10px;opacity:.75;
+    margin-top:2px}
+
+  .legend{display:flex;gap:20px;flex-wrap:wrap;margin-top:18px;
+    font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.06em;color:var(--ash)}
+  .legend span{display:flex;align-items:center;gap:7px}
+  .legend i{width:12px;height:12px;border-radius:2px;border-left:2px solid;display:block}
+  .legend .exp i{background:rgba(255,122,24,.12);border-color:var(--hbo)}
+  .legend .visit i{background:rgba(76,127,184,.14);border-color:var(--hbr)}
+  .legend .other i{background:rgba(201,195,187,.08);border-color:var(--soft)}
+
+  .note{margin-top:26px;font-size:12.5px;color:var(--ash);line-height:1.7;
+    border-top:1px solid var(--grid);padding-top:16px}
+
+  /* ── 모달 ── */
+  .modal{position:fixed;inset:0;background:rgba(0,0,0,.62);display:none;
+    align-items:center;justify-content:center;padding:20px;z-index:50}
+  .modal.on{display:flex}
+  .modal .box{background:var(--carbon);border:1px solid var(--grid);border-radius:4px;
+    width:100%;max-width:400px;padding:26px}
+  .modal h3{font-family:Archivo,sans-serif;font-weight:800;font-size:18px;margin:0 0 18px}
+  .field{margin-bottom:14px}
+  .field label{display:block;font-family:'IBM Plex Mono';font-size:11px;
+    letter-spacing:.06em;text-transform:uppercase;color:var(--ash);margin-bottom:6px}
+  .field input,.field select{width:100%;background:var(--ink);border:1px solid var(--grid);
+    border-radius:3px;color:var(--bone);font-size:14px;padding:10px 12px;
+    font-family:'IBM Plex Sans KR'}
+  .field input:focus,.field select:focus{outline:none;border-color:var(--hbo)}
+  .field.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .modal .actions{display:flex;gap:10px;margin-top:22px}
+  .modal .actions button{flex:1;border-radius:3px;padding:11px;cursor:pointer;
+    font-family:'IBM Plex Sans KR';font-weight:700;font-size:14px;border:1px solid var(--grid)}
+  .modal .cancel{background:transparent;color:var(--soft)}
+  .modal .cancel:hover{border-color:var(--soft)}
+  .modal .save{background:var(--hbo);color:var(--ink);border-color:var(--hbo)}
+  .modal .save:hover{background:#ff8a34}
+
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+    background:var(--carbon);border:1px solid var(--grid);border-radius:3px;
+    padding:12px 20px;font-size:13px;color:var(--bone);z-index:60;
+    opacity:0;transition:opacity .25s;pointer-events:none}
+  .toast.on{opacity:1}
+
+  @media(max-width:720px){
+    .wrap{padding:32px 14px 70px}
+    .head h1{font-size:26px}
+    .cell{font-size:12px}
+    .row{grid-template-columns:56px repeat(6,1fr)}
+    .cell.t{font-size:10px}
+    .ev{font-size:11px;padding:4px 6px}
+    .ev .x{opacity:1}
+    .toolbar .wk{margin-left:0;width:100%;justify-content:space-between}
+  }
+</style>
+</head>
+<body>
+<nav>
+  <span class="brand"><i></i>NMS LAB</span>
+  <a class="back" href="index.html">← Home</a>
+</nav>
+
+<div class="wrap">
+
+  <!-- ══ 잠금 화면 ══ -->
+  <div class="gate" id="gate">
+    <p class="eyebrow">Members only</p>
+    <h1>연구실 일정</h1>
+    <p>연구원 전용 공간입니다.<br>공용 암호를 입력해 주세요.</p>
+    <input id="pw" type="password" placeholder="암호" autocomplete="off"
+           onkeydown="if(event.key==='Enter')unlock()">
+    <button onclick="unlock()">들어가기</button>
+    <div class="err" id="gateErr"></div>
+  </div>
+
+  <!-- ══ 앱 ══ -->
+  <div id="app">
+    <div class="head">
+      <div>
+        <p class="eyebrow">Weekly schedule</p>
+        <h1>실험 · 방문 일정</h1>
+      </div>
+      <div class="status" id="status">불러오는 중…</div>
+    </div>
+
+    <div class="toolbar">
+      <button class="primary" onclick="openAdd()">+ 일정 추가</button>
+      <button onclick="load()">↻ 새로고침</button>
+      <div class="wk">
+        <button onclick="shiftWeek(-1)">‹ 이전주</button>
+        <b id="wkLabel">이번 주</b>
+        <button onclick="shiftWeek(1)">다음주 ›</button>
+      </div>
+    </div>
+
+    <div class="board" id="board"></div>
+
+    <div class="legend">
+      <span class="exp"><i></i>실험</span>
+      <span class="visit"><i></i>참여자 방문</span>
+      <span class="other"><i></i>기타</span>
+    </div>
+
+    <p class="note">
+      이 일정표에는 참여자 개인정보(이름·연락처)를 입력하지 마세요. 방문 슬롯은 시간대만
+      표시합니다. 모든 연구원이 같은 화면을 공유하며, 추가·삭제는 즉시 반영됩니다.
+    </p>
+  </div>
+</div>
+
+<!-- ══ 추가 모달 ══ -->
+<div class="modal" id="modal">
+  <div class="box">
+    <h3>일정 추가</h3>
+    <div class="field">
+      <label>종류</label>
+      <select id="mType">
+        <option value="exp">실험</option>
+        <option value="visit">참여자 방문</option>
+        <option value="other">기타</option>
+      </select>
+    </div>
+    <div class="field two">
+      <div>
+        <label>요일</label>
+        <select id="mDay">
+          <option value="0">월</option><option value="1">화</option>
+          <option value="2">수</option><option value="3">목</option>
+          <option value="4">금</option><option value="5">토</option>
+        </select>
+      </div>
+      <div>
+        <label>시간</label>
+        <select id="mTime"></select>
+      </div>
+    </div>
+    <div class="field">
+      <label>내용</label>
+      <input id="mTitle" placeholder="예: fNIRS 측정 / 방문 슬롯 A" maxlength="40">
+    </div>
+    <div class="field">
+      <label>담당 (선택)</label>
+      <input id="mWho" placeholder="예: 김 · 이" maxlength="20">
+    </div>
+    <div class="actions">
+      <button class="cancel" onclick="closeModal()">취소</button>
+      <button class="save" onclick="addEvent()">저장</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   설정 — 여기 두 줄만 본인 값으로 바꾸세요
+   ═══════════════════════════════════════════════════════════════ */
+const PASSWORD = "nms2026";                    // ← ① 연구원 공용 암호
+const API_URL  = "https://script.google.com/macros/s/AKfycbwbxyF58M4yoOa03bgX1c2GMOWhusrnZ-Z7Q1Wn4ffHTgSYiMtxu-JDJAJ59JpHhk3R1A/exec"; // Apps Script 배포 URL
+/* ═══════════════════════════════════════════════════════════════ */
+
+const DAYS = ["월","화","수","목","금","토"];
+const HOURS = [];
+for (let h = 9; h <= 18; h++) HOURS.push(h);   // 09:00 ~ 18:00
+
+let weekOffset = 0;   // 0 = 이번 주
+let events = [];      // 서버에서 받은 전체 일정
+
+/* ── 잠금 ── */
+function unlock(){
+  const v = document.getElementById('pw').value.trim();
+  if (v === PASSWORD){
+    sessionStorage.setItem('nms_ok','1');
+    showApp();
+  } else {
+    document.getElementById('gateErr').textContent = '암호가 올바르지 않습니다.';
+    document.getElementById('pw').value = '';
+  }
+}
+function showApp(){
+  document.getElementById('gate').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  buildTimeOptions();
+  load();
+}
+if (sessionStorage.getItem('nms_ok') === '1') {
+  window.addEventListener('DOMContentLoaded', showApp);
+}
+
+/* ── 주 계산 ── */
+function mondayOf(offset){
+  const d = new Date();
+  const day = (d.getDay() + 6) % 7;           // 월=0
+  d.setDate(d.getDate() - day + offset*7);
+  d.setHours(0,0,0,0);
+  return d;
+}
+function weekKey(offset){
+  const m = mondayOf(offset);
+  return m.getFullYear()+'-'+String(m.getMonth()+1).padStart(2,'0')+'-'+String(m.getDate()).padStart(2,'0');
+}
+function fmt(d){ return (d.getMonth()+1)+'/'+d.getDate(); }
+function shiftWeek(n){ weekOffset += n; render(); updateWkLabel(); }
+function updateWkLabel(){
+  const m = mondayOf(weekOffset);
+  const sun = new Date(m); sun.setDate(m.getDate()+5);
+  const tag = weekOffset===0 ? '이번 주 · ' : (weekOffset<0?'지난 · ':'다음 · ');
+  document.getElementById('wkLabel').textContent = tag + fmt(m)+'–'+fmt(sun);
+}
+
+/* ── 데이터 로드 ── */
+function load(){
+  setStatus('불러오는 중…', false);
+  if (API_URL === "PASTE_YOUR_APPS_SCRIPT_URL"){
+    setStatus('API 미연결 (데모)', true);
+    events = demoData();
+    render(); updateWkLabel();
+    return;
+  }
+  fetch(API_URL + '?action=list')
+    .then(r => r.json())
+    .then(d => {
+      events = Array.isArray(d) ? d : (d.rows || []);
+      setStatus('연결됨 · '+events.length+'건', false);
+      render(); updateWkLabel();
+    })
+    .catch(e => {
+      setStatus('불러오기 실패 · 새로고침 해보세요', true);
+      render(); updateWkLabel();
+    });
+}
+function setStatus(msg, warn){
+  const el = document.getElementById('status');
+  el.innerHTML = warn ? msg : '<b>●</b> '+msg;
+}
+
+/* ── 렌더링 ── */
+function buildTimeOptions(){
+  const sel = document.getElementById('mTime');
+  sel.innerHTML = HOURS.map(h => `<option value="${h}">${String(h).padStart(2,'0')}:00</option>`).join('');
+}
+function render(){
+  const wk = weekKey(weekOffset);
+  const board = document.getElementById('board');
+  let html = '<div class="row h"><div class="cell"></div>' +
+    DAYS.map(d=>`<div class="cell">${d}</div>`).join('') + '</div>';
+
+  HOURS.forEach(h => {
+    html += '<div class="row">';
+    html += `<div class="cell t">${String(h).padStart(2,'0')}:00</div>`;
+    for (let dy = 0; dy < 6; dy++){
+      const hits = events.filter(e => e.week===wk && Number(e.day)===dy && Number(e.hour)===h);
+      html += `<div class="cell slot" onclick="openAdd(${dy},${h})">`;
+      hits.forEach(e => {
+        const cls = (e.type==='exp'||e.type==='visit')?e.type:'other';
+        html += `<div class="ev ${cls}">`+
+                `<span class="x" onclick="event.stopPropagation();del('${e.id}')">×</span>`+
+                esc(e.title)+
+                (e.who?`<small>${esc(e.who)}</small>`:'')+
+                `</div>`;
+      });
+      html += '</div>';
+    }
+    html += '</div>';
+  });
+  board.innerHTML = html;
+}
+function esc(s){ return String(s||'').replace(/[<>&"]/g, c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c])); }
+
+/* ── 추가 ── */
+function openAdd(day, hour){
+  document.getElementById('modal').classList.add('on');
+  if (day!==undefined) document.getElementById('mDay').value = day;
+  if (hour!==undefined) document.getElementById('mTime').value = hour;
+  document.getElementById('mTitle').value = '';
+  document.getElementById('mWho').value = '';
+  setTimeout(()=>document.getElementById('mTitle').focus(), 50);
+}
+function closeModal(){ document.getElementById('modal').classList.remove('on'); }
+
+function addEvent(){
+  const title = document.getElementById('mTitle').value.trim();
+  if (!title){ toast('내용을 입력하세요'); return; }
+  const ev = {
+    id: 'e'+Date.now()+Math.random().toString(36).slice(2,6),
+    week: weekKey(weekOffset),
+    day: document.getElementById('mDay').value,
+    hour: document.getElementById('mTime').value,
+    type: document.getElementById('mType').value,
+    title: title,
+    who: document.getElementById('mWho').value.trim()
+  };
+  events.push(ev);
+  render();
+  closeModal();
+
+  if (API_URL === "PASTE_YOUR_APPS_SCRIPT_URL"){ toast('데모 모드 · 저장 안 됨'); return; }
+  post({action:'add', ...ev})
+    .then(()=> toast('저장됨'))
+    .catch(()=>{ toast('저장 실패'); load(); });
+}
+
+/* ── 삭제 ── */
+function del(id){
+  if (!confirm('이 일정을 삭제할까요?')) return;
+  events = events.filter(e => e.id !== id);
+  render();
+  if (API_URL === "PASTE_YOUR_APPS_SCRIPT_URL"){ toast('데모 모드'); return; }
+  post({action:'del', id:id})
+    .then(()=> toast('삭제됨'))
+    .catch(()=>{ toast('삭제 실패'); load(); });
+}
+
+/* ── 서버 통신 (CORS 회피: text/plain) ── */
+function post(payload){
+  return fetch(API_URL, {
+    method:'POST',
+    headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body: JSON.stringify(payload)
+  }).then(r => r.json());
+}
+
+/* ── 토스트 ── */
+let toastTimer;
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('on');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('on'), 1800);
+}
+
+/* ── 데모 데이터 (API 미연결 시 미리보기용) ── */
+function demoData(){
+  const wk = weekKey(0);
+  return [
+    {id:'d1',week:wk,day:0,hour:10,type:'exp',title:'fNIRS 측정',who:'김 · 이'},
+    {id:'d2',week:wk,day:0,hour:14,type:'visit',title:'방문 슬롯 A',who:''},
+    {id:'d3',week:wk,day:2,hour:11,type:'exp',title:'tDCS 세션',who:'박'},
+    {id:'d4',week:wk,day:2,hour:15,type:'visit',title:'방문 슬롯 B',who:''},
+    {id:'d5',week:wk,day:4,hour:9, type:'other',title:'장비 점검',who:''},
+    {id:'d6',week:wk,day:4,hour:16,type:'visit',title:'방문 슬롯 C',who:''},
+  ];
+}
+
+/* 모달 바깥 클릭시 닫기 */
+document.getElementById('modal').addEventListener('click', e=>{
+  if (e.target.id === 'modal') closeModal();
+});
+</script>
+</body>
+</html>

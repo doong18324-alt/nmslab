@@ -249,6 +249,32 @@ html[lang="ko"] h1,html[lang="ko"] h2,html[lang="ko"] h3,html[lang="ko"] h4,html
 html[lang="ja"] h1,html[lang="ja"] h2,html[lang="ja"] h3,html[lang="ja"] h4,html[lang="ja"] .sp .hd,html[lang="ja"] .person h4,html[lang="ja"] .pubcount b{font-family:'IBM Plex Sans JP',sans-serif;font-weight:700;letter-spacing:-.02em}
 html[lang="zh"] h1,html[lang="zh"] h2,html[lang="zh"] h3,html[lang="zh"] h4,html[lang="zh"] .sp .hd,html[lang="zh"] .person h4,html[lang="zh"] .pubcount b{font-family:'Noto Sans SC',sans-serif;font-weight:700;letter-spacing:-.02em}
 html:not([lang="en"]) .eyebrow,html:not([lang="en"]) .instr,html:not([lang="en"]) .theme .kw{text-transform:none;letter-spacing:.02em}
+
+/* flagship funded project */
+.flagship{border:1px solid var(--line);border-radius:16px;background:var(--raise);
+  padding:44px 42px;position:relative;overflow:hidden;margin-top:8px}
+.flagship::before{content:"";position:absolute;inset:0 0 auto 0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,122,24,.4),transparent)}
+.flagship .fund{display:inline-flex;align-items:center;gap:9px;font-family:'IBM Plex Mono';
+  font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--hbo);
+  border:1px solid rgba(255,122,24,.35);border-radius:100px;padding:6px 13px;margin-bottom:24px}
+.flagship .fund i{width:6px;height:6px;border-radius:50%;background:var(--hbo);
+  box-shadow:0 0 8px var(--hbo);flex:none}
+.flagship h3{font-size:clamp(26px,3vw,36px);letter-spacing:-.02em;margin-bottom:18px;max-width:22ch}
+.flagship .abstract{color:var(--fg-2);font-size:17px;font-weight:300;line-height:1.65;max-width:64ch}
+.flagship .pipe{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
+  background:var(--line-2);border:1px solid var(--line-2);border-radius:12px;overflow:hidden;
+  margin-top:34px}
+@media(max-width:700px){.flagship .pipe{grid-template-columns:1fr}}
+.flagship .step{background:var(--ink);padding:24px 24px}
+.flagship .step .num{font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.1em;
+  color:var(--hbo);opacity:.75;display:block;margin-bottom:10px}
+.flagship .step b{font-family:'Fraunces';font-weight:500;font-size:19px;letter-spacing:-.01em;
+  color:var(--fg);display:block;margin-bottom:6px}
+.flagship .step span{color:var(--fg-2);font-size:14.5px;font-weight:300;line-height:1.55}
+.flagship .grant{margin-top:30px;padding-top:22px;border-top:1px solid var(--line-2);
+  font-family:'IBM Plex Mono';font-size:12px;letter-spacing:.02em;color:var(--fg-3);line-height:1.7}
+.flagship .grant b{color:var(--fg-2);font-weight:500}
 </style>
 
 </head>
@@ -353,6 +379,48 @@ html:not([lang="en"]) .eyebrow,html:not([lang="en"]) .instr,html:not([lang="en"]
         <span class="kw" data-i18n="th.k6">Protocols</span>
         <p data-i18n="th.t6">High-efficiency rehabilitation protocols after surgery and in degenerative disease.</p>
       </article>
+    </div>
+  </section>
+
+  <section class="rv">
+    <p class="eyebrow" data-i18n="fs.eyebrow">Flagship project</p>
+    <h2 data-i18n="fs.h">The pain phenotype, made measurable.</h2>
+    <p class="sec-note" data-i18n="fs.note">
+      One project runs across the whole five-year horizon and ties the pain work together.
+    </p>
+
+    <div class="flagship">
+      <span class="fund"><i></i><span data-i18n="fs.fund">NRF Basic Research · 5-year</span></span>
+      <h3 data-i18n="fs.title">BPS-PPIS: a precision-intervention system for chronic pain</h3>
+      <p class="abstract" data-i18n="fs.abstract">
+        Chronic pain is scored with a single number, yet two people with the same score can
+        need opposite treatment. BPS-PPIS learns a bio-psycho-social phenotype from multimodal
+        signals, then matches each phenotype to the intervention most likely to help. The work
+        spans chronic spinal pain and fibromyalgia across a five-year programme.
+      </p>
+
+      <div class="pipe">
+        <div class="step">
+          <span class="num">01</span>
+          <b data-i18n="fs.s1h">Measure</b>
+          <span data-i18n="fs.s1p">fNIRS, HRV, respiration and self-report captured together, under rest and task.</span>
+        </div>
+        <div class="step">
+          <span class="num">02</span>
+          <b data-i18n="fs.s2h">Phenotype</b>
+          <span data-i18n="fs.s2p">Multimodal fusion and representation learning sort patients into interpretable subtypes.</span>
+        </div>
+        <div class="step">
+          <span class="num">03</span>
+          <b data-i18n="fs.s3h">Match</b>
+          <span data-i18n="fs.s3p">Reinforcement-learning matching proposes the intervention each subtype is most likely to respond to.</span>
+        </div>
+      </div>
+
+      <p class="grant" data-i18n="fs.grant">
+        Supported by the National Research Foundation of Korea (NRF), funded by the Korea government (MSIT).
+        <br>Grant <b>RS-2026-25591593</b>
+      </p>
     </div>
   </section>
 

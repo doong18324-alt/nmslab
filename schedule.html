@@ -314,17 +314,14 @@ function load(){
     render(); updateWkLabel();
     return;
   }
-  fetch(API_URL + '?action=list')
-    .then(r => r.json())
-    .then(d => {
-      events = Array.isArray(d) ? d : (d.rows || []);
-      setStatus('연결됨 · '+events.length+'건', false);
-      render(); updateWkLabel();
-    })
-    .catch(e => {
-      setStatus('불러오기 실패 · 새로고침 해보세요', true);
-      render(); updateWkLabel();
-    });
+  jsonp({action:'list'}, function(d){
+    events = Array.isArray(d) ? d : (d && d.rows ? d.rows : []);
+    setStatus('연결됨 · '+events.length+'건', false);
+    render(); updateWkLabel();
+  }, function(){
+    setStatus('불러오기 실패 · 새로고침 해보세요', true);
+    render(); updateWkLabel();
+  });
 }
 function setStatus(msg, warn){
   const el = document.getElementById('status');
@@ -392,9 +389,10 @@ function addEvent(){
   closeModal();
 
   if (API_URL === "PASTE_YOUR_APPS_SCRIPT_URL"){ toast('데모 모드 · 저장 안 됨'); return; }
-  post({action:'add', ...ev})
-    .then(()=> toast('저장됨'))
-    .catch(()=>{ toast('저장 실패'); load(); });
+  jsonp({action:'add', id:ev.id, week:ev.week, day:ev.day, hour:ev.hour,
+         type:ev.type, title:ev.title, who:ev.who},
+    function(){ toast('저장됨'); },
+    function(){ toast('저장 실패'); load(); });
 }
 
 /* ── 삭제 ── */
@@ -403,18 +401,27 @@ function del(id){
   events = events.filter(e => e.id !== id);
   render();
   if (API_URL === "PASTE_YOUR_APPS_SCRIPT_URL"){ toast('데모 모드'); return; }
-  post({action:'del', id:id})
-    .then(()=> toast('삭제됨'))
-    .catch(()=>{ toast('삭제 실패'); load(); });
+  jsonp({action:'del', id:id},
+    function(){ toast('삭제됨'); },
+    function(){ toast('삭제 실패'); load(); });
 }
 
-/* ── 서버 통신 (CORS 회피: text/plain) ── */
-function post(payload){
-  return fetch(API_URL, {
-    method:'POST',
-    headers:{'Content-Type':'text/plain;charset=utf-8'},
-    body: JSON.stringify(payload)
-  }).then(r => r.json());
+/* ── 서버 통신 : JSONP (스크립트 태그, CORS 안 걸림) ── */
+function jsonp(params, onOk, onErr){
+  var cb = 'nms_cb_' + Date.now() + Math.floor(Math.random()*10000);
+  var timer = setTimeout(function(){ cleanup(); if(onErr) onErr(); }, 12000);
+  function cleanup(){
+    clearTimeout(timer);
+    delete window[cb];
+    if (tag && tag.parentNode) tag.parentNode.removeChild(tag);
+  }
+  window[cb] = function(data){ cleanup(); if(onOk) onOk(data); };
+  var qs = 'cb=' + cb;
+  for (var k in params) qs += '&' + encodeURIComponent(k) + '=' + encodeURIComponent(params[k]);
+  var tag = document.createElement('script');
+  tag.src = API_URL + '?' + qs;
+  tag.onerror = function(){ cleanup(); if(onErr) onErr(); };
+  document.body.appendChild(tag);
 }
 
 /* ── 토스트 ── */

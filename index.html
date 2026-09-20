@@ -50,7 +50,30 @@ nav.scrolled{border-bottom-color:var(--line-2);background:rgba(8,8,10,.85)}
   padding:2px 0;position:relative;transition:color .18s}
 .links a:hover,.links a:focus-visible,.links a[aria-current="page"]{color:var(--fg)}
 .links a[aria-current="page"]::after{content:"";position:absolute;left:0;right:0;bottom:-3px;height:1px;background:var(--hbo)}
-@media(max-width:640px){.links{gap:15px}.links a{font-size:12.5px}}
+@media(max-width:860px){
+  .navin{padding:14px 18px;gap:12px}
+  .navright{gap:14px}
+  .links{gap:14px}
+  .links a{font-size:12.5px}
+}
+@media(max-width:720px){
+  nav .navin{padding:12px 16px}
+  .mark span{display:none}
+}
+@media(max-width:640px){
+  .mark b{font-size:17px}
+  .navin{gap:10px}
+  .navright{gap:10px;min-width:0;overflow-x:auto;-webkit-overflow-scrolling:touch;
+    scrollbar-width:none;flex:1;justify-content:flex-end}
+  .navright::-webkit-scrollbar{display:none}
+  .links{gap:12px;flex:none}
+  .links a{font-size:12px;white-space:nowrap}
+  .langsw{flex:none}
+  .langsw button{padding:5px 7px;font-size:11px}
+}
+@media(max-width:460px){
+  .navright{justify-content:flex-start}
+}
 .langsw{display:flex;align-items:center;gap:2px;border:1px solid var(--line);border-radius:100px;padding:2px}
 .langsw button{appearance:none;background:transparent;border:0;cursor:pointer;
   font-family:'Inter';font-size:12px;font-weight:500;line-height:1;color:var(--fg-3);
@@ -67,6 +90,10 @@ nav.scrolled{border-bottom-color:var(--line-2);background:rgba(8,8,10,.85)}
   background:
     radial-gradient(120% 80% at 72% 45%, transparent 0%, rgba(8,8,10,.35) 55%, rgba(8,8,10,.9) 100%),
     linear-gradient(90deg, rgba(8,8,10,.96) 0%, rgba(8,8,10,.7) 38%, rgba(8,8,10,0) 66%)}
+@media(max-width:820px){
+  .hero::after{background:
+    linear-gradient(180deg, rgba(8,8,10,.92) 0%, rgba(8,8,10,.72) 42%, rgba(8,8,10,.55) 62%, rgba(8,8,10,.85) 100%)}
+}
 .hero-in{position:relative;width:100%;max-width:var(--maxw);margin:0 auto;padding:0 32px}
 @media(max-width:640px){.hero-in{padding:0 22px}}
 .hero h1{font-size:clamp(46px,7vw,92px);letter-spacing:-.035em;max-width:15ch}
@@ -243,8 +270,8 @@ html:not([lang="en"]) .eyebrow,html:not([lang="en"]) .instr{text-transform:none;
         The centre gives the work its instruments and, harder to obtain, its access to people.
       </p>
       <div class="kv">
-        <div><b data-i18n="ctr.k1">In the lab</b><span data-i18n="ctr.v1">Two fNIRS systems, tDCS, HRV and actigraphy, markerless 3D motion capture</span></div>
-        <div><b data-i18n="ctr.k2">In the field</b><span data-i18n="ctr.v2">Smart Care Village (5,000+ residents), AI Healthcare Tower, three health-management centres</span></div>
+        <div><b data-i18n="ctr.k1">In the lab</b><span data-i18n="ctr.v1">Two fNIRS systems, tDCS, HRV, respiration and actigraphy, markerless 3D motion and gait analysis</span></div>
+        <div><b data-i18n="ctr.k2">In the field</b><span data-i18n="ctr.v2">Smart Care Village (689 m², 5,000+ residents), AI Healthcare Donggu Tower, and an integrated-care network across four district offices</span></div>
         <div><b data-i18n="ctr.k3">Design</b><span data-i18n="ctr.v3">Urban and rural sites built into every protocol for external validity</span></div>
         <div><b data-i18n="ctr.k4">Reach</b><span data-i18n="ctr.v4">Clinical, engineering and international collaborators across ageing and human performance</span></div>
       </div>
@@ -320,8 +347,11 @@ html:not([lang="en"]) .eyebrow,html:not([lang="en"]) .instr{text-transform:none;
   function draw(tt){
     ctx.clearRect(0,0,W,H);
     ctx.fillStyle='#08080A'; ctx.fillRect(0,0,W,H);
-    var cx=W*0.66, cy=H*0.5;
-    var rx=Math.min(W*0.30, H*0.42), ry=rx*1.16;
+    var narrow = (W/DPR) < 820;
+    var cx = narrow ? W*0.5  : W*0.66;
+    var cy = narrow ? H*0.80 : H*0.5;
+    var rx = narrow ? Math.min(W*0.42, H*0.26) : Math.min(W*0.30, H*0.42);
+    var ry = rx*1.16;
     var v=[],q; for(q=0;q<E.NCH;q++) v.push(E.at(E.hbo[q],tt));
     var d=img.data,gx,gy,nx,ny,o,num,den,dmin,dx,dy,r2,wg,val,cov,a,s,R,G,B,mag;
     for(gy=0;gy<GH;gy++)for(gx=0;gx<GW;gx++){

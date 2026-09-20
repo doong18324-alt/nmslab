@@ -147,11 +147,13 @@ h2{font-size:clamp(27px,3.4vw,42px);margin-top:14px}
   position:relative;letter-spacing:.03em}
 .pi li::before{content:"";position:absolute;left:0;top:15px;width:8px;height:1px;background:var(--hbo)}
 
-.people{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--grid);
-  border:1px solid var(--grid)}
-@media(max-width:900px){.people{grid-template-columns:repeat(2,1fr)}}
+.people{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1px;
+  background:var(--grid);border:1px solid var(--grid)}
+.people.solo{grid-template-columns:minmax(240px,320px);background:none;border:0;width:max-content;max-width:100%}
+@media(max-width:900px){.people:not(.solo){grid-template-columns:repeat(2,1fr)}}
 @media(max-width:560px){.people{grid-template-columns:1fr}}
 .person{background:var(--ink);padding:28px 26px;transition:background .2s}
+.people.solo .person{border:1px solid var(--grid)}
 .person:hover{background:var(--carbon)}
 .person .avatar{width:100%;aspect-ratio:1/1;border:1px solid var(--grid);background:#0F0F11;
   margin-bottom:20px;display:flex;align-items:center;justify-content:center;position:relative;
@@ -258,6 +260,7 @@ html:not([lang="en"]) .links a,html:not([lang="en"]) .rolebar .n,html:not([lang=
       <a href="people.html" data-i18n="nav.people" aria-current="page">People</a>
       <a href="publications.html" data-i18n="nav.pubs">Publications</a>
       <a href="contact.html" data-i18n="nav.contact">Contact</a>
+      <a href="schedule.html" data-i18n="nav.members">Members</a>
     </div>
       <div class="langsw" role="group" aria-label="Language / 언어"></div>
     </div>
@@ -271,7 +274,7 @@ html:not([lang="en"]) .links a,html:not([lang="en"]) .rolebar .n,html:not([lang=
     <h1 data-i18n="pe.h1">Who runs the recordings.</h1>
     <p class="lede" data-i18n="pe.lede">
       A small group of clinicians and scientists. Everyone here collects data as well as
-      analyses it — the two are not separable in this lab.
+      analyses it. The two are not separable in this lab.
     </p>
   </div>
 
@@ -311,81 +314,23 @@ html:not([lang="en"]) .links a,html:not([lang="en"]) .rolebar .n,html:not([lang=
       <span class="n mono" data-i18n="pe.res.n">Postdoctoral · Research staff</span>
     </div>
 
-    <div class="people">
+    <div class="people solo">
       <article class="person">
-        <div class="avatar"><!-- <img src="assets/img/p1.jpg" alt=""> --></div>
-        <h4>Name Surname</h4>
-        <p class="role" data-i18n="role.postdoc">Postdoctoral Researcher</p>
-        <p data-i18n="pe.b1">Prefrontal haemodynamics during dual-task gait in older adults.</p>
+        <div class="avatar"><img src="assets/img/shin.jpg" alt="Seungwoo Shin"></div>
+        <h4>Seungwoo Shin</h4>
+        <p class="role" data-i18n="role.researcher">Researcher · PhD in Rehabilitation Science</p>
+        <p data-i18n="pe.shin">Cortical haemodynamics and rehabilitation science.</p>
       </article>
-
-      <article class="person">
-        <div class="avatar"><!-- <img src="assets/img/p2.jpg" alt=""> --></div>
-        <h4>Name Surname</h4>
-        <p class="role" data-i18n="role.fellow">Research Fellow</p>
-        <p data-i18n="pe.b2">Non-invasive brain stimulation protocols in chronic musculoskeletal pain.</p>
-      </article>
-
-      <article class="person">
-        <div class="avatar"><!-- <img src="assets/img/p3.jpg" alt=""> --></div>
-        <h4>Name Surname</h4>
-        <p class="role" data-i18n="role.ra">Research Assistant</p>
-        <p data-i18n="pe.b3">Community cohort recruitment and multimodal data collection.</p>
-      </article>
-    </div>
-  </section>
-
-  <!-- ============ GRADUATE STUDENTS ============ -->
-  <section class="rv">
-    <div class="rolebar">
-      <h2 data-i18n="pe.grad">Graduate students</h2>
-      <span class="n mono" data-i18n="pe.grad.n">MSc · PhD candidates</span>
-    </div>
-
-    <div class="people">
-      <article class="person">
-        <div class="avatar"></div>
-        <h4>Name Surname</h4>
-        <p class="role" data-i18n="role.phd">PhD Candidate</p>
-        <p data-i18n="pe.b4">Frailty phenotyping and cortical activation asymmetry.</p>
-      </article>
-
-      <article class="person">
-        <div class="avatar"></div>
-        <h4>Name Surname</h4>
-        <p class="role" data-i18n="role.msc">MSc Student</p>
-        <p data-i18n="pe.b5">Markerless motion analysis in return-to-sport decision making.</p>
-      </article>
-
-      <article class="person">
-        <div class="avatar"></div>
-        <h4>Name Surname</h4>
-        <p class="role" data-i18n="role.msc">MSc Student</p>
-        <p data-i18n="pe.b6">Heart rate variability as an autonomic marker of frailty.</p>
-      </article>
-    </div>
-  </section>
-
-  <!-- ============ ALUMNI ============ -->
-  <section class="rv">
-    <div class="rolebar">
-      <h2 data-i18n="pe.alum">Alumni</h2>
-      <span class="n mono" data-i18n="pe.alum.n">Where they went</span>
-    </div>
-    <div class="alumni">
-      <span>Name Surname — Clinical PT, hospital</span>
-      <span>Name Surname — PhD program, university</span>
-      <span>Name Surname — Industry R&amp;D</span>
     </div>
   </section>
 
   <section class="rv">
     <p class="eyebrow" data-i18n="op.eyebrow">Openings</p>
-    <h2 data-i18n="op.h">We have room for two.</h2>
+    <h2 data-i18n="op.h">The lab is always recruiting.</h2>
     <p class="sec-note" data-i18n="op.note.people">
-      We are looking for a graduate student with a background in physical therapy, kinesiology
-      or biomedical engineering, and a postdoctoral researcher with fNIRS or signal-processing
-      experience. Write with a CV and one paragraph on what you want to measure.
+      We welcome graduate students, researchers and clinical collaborators interested in
+      cortical haemodynamics, geriatric rehabilitation or pain neuroscience at any time.
+      Reach out through the contact page with a short note on what you would like to measure.
     </p>
     <div class="cta" style="margin-top:0">
       <a class="btn btn-a" href="contact.html" data-i18n="btn.contactlab">Contact the lab</a>

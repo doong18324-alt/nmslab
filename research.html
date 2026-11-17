@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Research — NMS Lab | Novel Medical Science</title>
 <meta name="description" content="Research programme of the Novel Medical Science Lab: cortical haemodynamics, pain neuroscience, non-invasive brain stimulation, geriatric exercise medicine.">
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<meta property="og:title" content="NMS Lab — Novel Medical Science">
+<meta property="og:image" content="https://nmslab.org/assets/img/og-image.png">
+<meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+KR:wght@300;400;700&family=IBM+Plex+Sans+JP:wght@300;400;700&family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet">
@@ -275,6 +280,13 @@ html:not([lang="en"]) .eyebrow,html:not([lang="en"]) .instr,html:not([lang="en"]
 .flagship .grant{margin-top:30px;padding-top:22px;border-top:1px solid var(--line-2);
   font-family:'IBM Plex Mono';font-size:12px;letter-spacing:.02em;color:var(--fg-3);line-height:1.7}
 .flagship .grant b{color:var(--fg-2);font-weight:500}
+
+/* logo */
+.mark .logo-full{height:40px;width:auto;display:block}
+.mark .logo-mark{height:32px;width:auto;display:none}
+@media(max-width:720px){.mark .logo-full{display:none}.mark .logo-mark{display:block}}
+footer .foot-brand{flex-basis:100%;margin-bottom:6px}
+footer .foot-logo{height:44px;width:auto;display:block;opacity:.92}
 </style>
 
 </head>
@@ -282,8 +294,9 @@ html:not([lang="en"]) .eyebrow,html:not([lang="en"]) .instr,html:not([lang="en"]
 
 <nav>
   <div class="navin">
-    <a class="mark" href="index.html">
-      <i class="dot"></i><b>NMS&nbsp;LAB</b><span>Novel Medical Science</span>
+    <a class="mark" href="index.html" aria-label="NMS Lab home">
+      <img class="logo-full" src="assets/img/logo-full.png" alt="NMS Lab, Novel Medical Science" width="150" height="40">
+      <img class="logo-mark" src="assets/img/logo-mark.png" alt="NMS Lab" width="39" height="32">
     </a>
     <div class="navright">
       <div class="links">
@@ -459,6 +472,7 @@ html:not([lang="en"]) .eyebrow,html:not([lang="en"]) .instr,html:not([lang="en"]
   </section>
 
   <footer>
+    <a class="foot-brand" href="index.html"><img class="foot-logo" src="assets/img/logo-full.png" alt="NMS Lab, Novel Medical Science" width="165" height="44"></a>
     <span data-i18n="foot.org">NMS Lab &middot; Novel Medical Science &middot; Gwangju Health University</span>
     <span><span data-i18n="foot.loc">Gwangju, Republic of Korea</span> &middot; <a href="https://orcid.org/0000-0001-6538-3872">0000-0001-6538-3872</a></span>
   </footer>

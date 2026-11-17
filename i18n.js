@@ -15,8 +15,11 @@
      · ORCID / DOI / email
    These are proper nouns. Translating them breaks citation and search.
 
-   Language resolves as:  ?lang= in the URL  →  saved choice  →  browser  →  en
-   So https://nmslab.org/?lang=ja opens the whole site in Japanese, and the
+   Language resolves as:  ?lang= in the URL  →  choice made in this tab  →  en
+   A fresh visit always opens in English, whatever the browser language or a
+   choice made on an earlier visit. A language picked with the switcher holds
+   only while moving between pages in the same tab.
+   https://nmslab.org/?lang=ja still opens the whole site in Japanese, and the
    switcher keeps that parameter in the address bar so the link stays shareable.
    ========================================================================== */
 (function () {
@@ -508,8 +511,9 @@
   var STORE = "nms-lang";
   var codes = LANGS.map(function (l) { return l.code; });
 
-  function save(c) { try { localStorage.setItem(STORE, c); } catch (e) {} }
-  function load()  { try { return localStorage.getItem(STORE); } catch (e) { return null; } }
+  try { localStorage.removeItem(STORE); } catch (e) {}   /* drop choices saved by the old build */
+  function save(c) { try { sessionStorage.setItem(STORE, c); } catch (e) {} }
+  function load()  { try { return sessionStorage.getItem(STORE); } catch (e) { return null; } }
 
   function resolve() {
     var q = null;
@@ -517,8 +521,7 @@
     if (q && codes.indexOf(q) > -1) return q;
     var s = load();
     if (s && codes.indexOf(s) > -1) return s;
-    var n = (navigator.language || "en").slice(0, 2).toLowerCase();
-    return codes.indexOf(n) > -1 ? n : "en";
+    return "en";
   }
 
   /* Hangul/CJK webfonts load only if that language is actually selected —
